@@ -1,0 +1,15 @@
+The idea behind Eagle Swing is simple, some days you have a good day at the range and sometimes you can't figure out all the things you're off on. Here, we take in a recorded video of a driving range session and then after processing the video with our models --> we can generate insights into what you are doing when you hit your best swing compared to those swings where you can't seem to connect.
+
+
+This repo and website will be organized in a specific fashion, in creating the end product, we'll run into a ton of questions along the way that need to be answered. In this pursuit, each notebook/post will be featuring a specific problem that needs further exploration, sometimes code will be generated within the notebook for further use, while sometimes that code will be only useful for the small and specific purpose of the task at hand. 
+
+The structure of the notebooks will be as follows
+
+(00) Data Engineering
+    --> we will have to engineer pipelines that can receive videos and properly crop them and label them for our models. Doing this ad-hoc will lead to chaos. Unclear data and demarcations of the data will lead to unclear outcomes. Doing the work up front to clarify our data will lead to less of a headache down the road
+
+(01) Data Processing
+    --> Once our dataset is in place, we can process it with off the shelf tools to better understand how things shake out in different scenarios -- finding out if there's some low hanging fruit in our final solution but also uncovering unknwon items within the data and its distribution --> getting comfortable working with the data is a first step towards rapidly trying to prototype things
+
+(02) Data Modeling
+    --> Once we have our final dataset and have come to grips with the data, we can try to generate hueristics and model it in a way to reliably understand a golfer and their swing in order to provide actionable insights
