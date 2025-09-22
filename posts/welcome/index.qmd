@@ -1,12 +1,12 @@
 ---
-title: "Welcome To My Blog"
-author: "Tristan O'Malley"
+title: "Eagle Swing Takes Off"
+author: "Ali Zaidi"
 date: "2025-09-19"
 categories: [news]
 ---
 
-This is the first post in a Quarto blog. Welcome!
+This is the first post in the R&D page for Eagle Swing. Welcome!
 
 ![](thumbnail.jpg)
 
-Since this post doesn't specify an explicit `image`, the first image in the post will be used in the listing page of posts.
+The idea behind Eagle Swing is simple, some days you have a good day at the range and sometimes you can't figure out all the things you're off on. Here, we take in a recorded video of a driving range session and then after processing the video with our models --> we can generate insights into what you are doing when you hit your best swing compared to those swings where you can't seem to connect.
