@@ -11,7 +11,7 @@
     "href": "posts/welcome/index.html",
     "title": "Eagle Swing Takes Off",
     "section": "",
-    "text": "This is the first post in the R&D page for Eagle Swing. Welcome!\n\nThe idea behind Eagle Swing is simple, some days you have a good day at the range and sometimes you can’t figure out all the things you’re off on. Here, we take in a recorded video of a driving range session and then after processing the video with our models –&gt; we can generate insights into what you are doing when you hit your best swing compared to those swings where you can’t seem to connect."
+    "text": "This is the first post in the R&D page for Eagle Swing. Welcome!\n\nThe idea behind Eagle Swing is simple, some days you have a good day at the range and sometimes you can’t figure out all the things you’re off on. Here, we take in a recorded video of a driving range session and then after processing the video with our models –&gt; we can generate insights into what you are doing when you hit your best swing compared to those swings where you can’t seem to connect.\nThis repo and website will be organized in a specific fashion, in creating the end product, we’ll run into a ton of questions along the way that need to be answered. In this pursuit, each notebook/post will be featuring a specific problem that needs further exploration, sometimes code will be generated within the notebook for further use, while sometimes that code will be only useful for the small and specific purpose of the task at hand."
   },
   {
     "objectID": "index.html",
