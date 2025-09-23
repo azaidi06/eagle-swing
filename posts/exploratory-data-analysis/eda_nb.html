@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.7.32">
+<meta name="generator" content="quarto-1.7.33">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -21,10 +21,45 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -37,10 +72,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-ea385d0e468b0dd5ea5bf0780b1290d9.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-c1fac2584b48ed01fb6e278e36375074.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-e373d048752370a41f40a901e2c98b93.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,6 +103,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -148,8 +186,469 @@ ul.task-list li input[type="checkbox"] {
 
 
 
+<div id="0f3145ae-1ca6-41ea-b8dd-9ebbc3a48922" class="cell" data-execution_count="52">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Lets take a look at our full videos and pull some metadata from them in case we need this information later on</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">### Since the videos are from iphone and ffmpeg will decode/encode them to mp4 format, lets make sure we pull down critical information before any processing</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="71c4ed7e-5165-4709-a0d6-be189550f432" class="cell" data-execution_count="56">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastai.vision.<span class="bu">all</span> <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> IPython.display <span class="im">import</span> Video</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> ffmpeg</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cv2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="6cba7e77-19a8-479b-be01-d274c2054f78" class="cell" data-execution_count="62">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> <span class="st">'../../../data'</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>video_paths <span class="op">=</span> get_files(<span class="ss">f'</span><span class="sc">{</span>data_path<span class="sc">}</span><span class="ss">/full_videos/'</span>, extensions<span class="op">=</span><span class="st">'.MOV'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>video_names <span class="op">=</span> [fpath.name.split(<span class="st">'.'</span>)[<span class="dv">0</span>] <span class="cf">for</span> fpath <span class="kw">in</span> video_files] </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'we have </span><span class="sc">{</span><span class="bu">len</span>(video_files)<span class="sc">}</span><span class="ss"> total videos &amp; the file names are: </span><span class="ch">\n</span><span class="sc">{</span>video_names<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>we have 28 total videos &amp; the file names are: 
+['IMG_1014', 'IMG_1017', 'IMG_1015', 'IMG_1018', 'IMG_1023', 'IMG_1016', 'IMG_1019', 'IMG_0851', 'IMG_0855', 'IMG_0856', 'IMG_0849', 'IMG_0860', 'IMG_0857', 'IMG_0852', 'IMG_0853', 'IMG_0858', 'IMG_0859', 'IMG_0854', 'IMG_0848', 'IMG_0861', 'IMG_1090', 'IMG_1087', 'IMG_1088', 'IMG_1092', 'IMG_1086', 'IMG_1093', 'IMG_1091', 'IMG_1089']</code></pre>
+</div>
+</div>
+<section id="the-videos-we-have-are-pretty-big-compared-to-the-clipped-version-of-the-individual-swings" class="level3">
+<h3 class="anchored" data-anchor-id="the-videos-we-have-are-pretty-big-compared-to-the-clipped-version-of-the-individual-swings">The videos we have are pretty big compared to the clipped version of the individual swings</h3>
+<div id="a3be6bd7-876a-4e7c-bf5f-6d7e7929e036" class="cell" data-execution_count="55">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> du <span class="op">-</span>sh ..<span class="op">/</span>..<span class="op">/</span>..<span class="op">/</span>data<span class="op">/</span>full_videos<span class="op">/</span>jun8<span class="op">/</span>IMG_0856.MOV</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">!</span> du <span class="op">-</span>sh ..<span class="op">/</span>..<span class="op">/</span>..<span class="op">/</span>data<span class="op">/</span>clips<span class="op">/</span>accurate<span class="op">/</span>IMG_0856_swing_3_score_2.mp4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>177M    ../../../data/full_videos/jun8/IMG_0856.MOV
+4.0M    ../../../data/clips/accurate/IMG_0856_swing_3_score_2.mp4</code></pre>
+</div>
+</div>
+<p>Lets aggregate our metadata extraction into a class to make it easier to read every file and have something easier to understand and change if we get more data or figure out bugs</p>
+<div id="8208f164-db08-46fa-a727-08bfc1ed6ebb" class="cell" data-execution_count="167">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> video_metadata():</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, file_path):</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.file_path <span class="op">=</span> file_path</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.metadata <span class="op">=</span> <span class="va">self</span>.get_metadata(<span class="va">self</span>.file_path)</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.height <span class="op">=</span> <span class="va">self</span>.metadata[<span class="st">'height'</span>]</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.width <span class="op">=</span> <span class="va">self</span>.metadata[<span class="st">'width'</span>]</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.fps <span class="op">=</span> <span class="va">self</span>.get_fps(<span class="va">self</span>.metadata)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.minutes <span class="op">=</span> <span class="va">self</span>.get_duration(<span class="va">self</span>.metadata, minutes<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.seconds <span class="op">=</span> <span class="va">self</span>.get_duration(<span class="va">self</span>.metadata)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.bitrate <span class="op">=</span> <span class="va">self</span>.get_bitrate(<span class="va">self</span>.metadata)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> aggregate_metadata(<span class="va">self</span>):</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> {<span class="st">'file_name'</span>: <span class="bu">str</span>(<span class="va">self</span>.file_path).split(<span class="st">'/'</span>)[<span class="op">-</span><span class="dv">1</span>],</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                <span class="st">'fps'</span>: <span class="va">self</span>.fps,</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                <span class="st">'height'</span>: <span class="va">self</span>.height,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                <span class="st">'width'</span>: <span class="va">self</span>.width,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>                <span class="st">'minutes'</span>: <span class="va">self</span>.minutes,</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>                <span class="st">'seconds'</span>: <span class="va">self</span>.seconds,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>                <span class="st">'bitrate'</span>: <span class="va">self</span>.bitrate,</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>                <span class="st">'file_path'</span>: <span class="va">self</span>.file_path,</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>                }</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_metadata(<span class="va">self</span>, file_path):</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        <span class="co">'''</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="co">        Sometimes the video metadata is not in the first stream??</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        meta_list <span class="op">=</span> ffmpeg.probe(file_path)[<span class="st">'streams'</span>]</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> meta <span class="kw">in</span> meta_list:</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>            <span class="cf">try</span>: </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>                meta[<span class="st">'height'</span>]</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>                <span class="cf">return</span> meta</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">except</span>:</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>                <span class="cf">pass</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>                 </span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_fps(<span class="va">self</span>, metadata):</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        fps <span class="op">=</span> metadata[<span class="st">'r_frame_rate'</span>]</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">round</span>(<span class="bu">eval</span>(fps))</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_duration(<span class="va">self</span>, metadata, minutes<span class="op">=</span><span class="va">False</span>):</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>        seconds <span class="op">=</span> <span class="bu">round</span>(<span class="bu">float</span>(metadata[<span class="st">'duration'</span>]))</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>        <span class="co"># returns time in minutes</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> minutes: </span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> seconds <span class="op">/</span> <span class="dv">60</span></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>: <span class="cf">return</span> seconds</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_bitrate(<span class="va">self</span>, metadata):</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>        <span class="co">### returns bit rate in megabyte -- divide by 1000 for Kbs and once more for Mbs</span></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>        bitrate <span class="op">=</span> <span class="bu">int</span>(metadata[<span class="st">'bit_rate'</span>]) <span class="op">/</span> <span class="dv">1000</span> <span class="op">/</span> <span class="dv">1000</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> bitrate</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="d22c4503-3b44-45e2-ba55-3ece31e59549" class="cell" data-execution_count="171">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>video_metadata(video_paths[<span class="dv">12</span>]).aggregate_metadata()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="171">
+<pre><code>{'file_name': 'IMG_0857.MOV',
+ 'fps': 30,
+ 'height': 1080,
+ 'width': 1920,
+ 'minutes': 2.55,
+ 'seconds': 153,
+ 'bitrate': 8.605271,
+ 'file_path': Path('../../../data/full_videos/jun8/IMG_0857.MOV')}</code></pre>
+</div>
+</div>
+<div id="f3ce0459-e353-4e3a-9c3a-6008bbdf08f8" class="cell" data-execution_count="172">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>metadata_list <span class="op">=</span> [video_metadata(video_path).aggregate_metadata() <span class="cf">for</span> video_path <span class="kw">in</span> video_paths]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="e6292ae3-4aa8-4cfa-b67a-a2a372a50bff" class="cell" data-execution_count="180">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>full_video_df <span class="op">=</span> pd.DataFrame(metadata_list).sort_values(by<span class="op">=</span><span class="st">'file_name'</span>).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>full_video_df.to_csv(<span class="st">'full_video_metadata.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.read_csv(<span class="st">'full_video_metadata.csv'</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="180">
+<div>
 
 
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">file_name</th>
+<th data-quarto-table-cell-role="th">fps</th>
+<th data-quarto-table-cell-role="th">height</th>
+<th data-quarto-table-cell-role="th">width</th>
+<th data-quarto-table-cell-role="th">minutes</th>
+<th data-quarto-table-cell-role="th">seconds</th>
+<th data-quarto-table-cell-role="th">bitrate</th>
+<th data-quarto-table-cell-role="th">file_path</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>IMG_0848.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>4.383333</td>
+<td>263</td>
+<td>8.610146</td>
+<td>../../../data/full_videos/jun8/IMG_0848.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>IMG_0849.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>9.200000</td>
+<td>552</td>
+<td>8.583966</td>
+<td>../../../data/full_videos/jun8/IMG_0849.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>IMG_0851.MOV</td>
+<td>30</td>
+<td>960</td>
+<td>540</td>
+<td>2.866667</td>
+<td>172</td>
+<td>4.692317</td>
+<td>../../../data/full_videos/jun8/IMG_0851.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>IMG_0852.MOV</td>
+<td>30</td>
+<td>540</td>
+<td>960</td>
+<td>2.950000</td>
+<td>177</td>
+<td>1.370111</td>
+<td>../../../data/full_videos/jun8/IMG_0852.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>IMG_0853.MOV</td>
+<td>30</td>
+<td>540</td>
+<td>960</td>
+<td>2.716667</td>
+<td>163</td>
+<td>1.367803</td>
+<td>../../../data/full_videos/jun8/IMG_0853.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>IMG_0854.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>2.616667</td>
+<td>157</td>
+<td>8.607743</td>
+<td>../../../data/full_videos/jun8/IMG_0854.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>IMG_0855.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>2.966667</td>
+<td>178</td>
+<td>8.598368</td>
+<td>../../../data/full_videos/jun8/IMG_0855.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>IMG_0856.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>2.783333</td>
+<td>167</td>
+<td>8.588547</td>
+<td>../../../data/full_videos/jun8/IMG_0856.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>IMG_0857.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>2.550000</td>
+<td>153</td>
+<td>8.605271</td>
+<td>../../../data/full_videos/jun8/IMG_0857.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>IMG_0858.MOV</td>
+<td>30</td>
+<td>568</td>
+<td>320</td>
+<td>3.050000</td>
+<td>183</td>
+<td>1.865664</td>
+<td>../../../data/full_videos/jun8/IMG_0858.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>IMG_0859.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>2.516667</td>
+<td>151</td>
+<td>8.624519</td>
+<td>../../../data/full_videos/jun8/IMG_0859.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>IMG_0860.MOV</td>
+<td>30</td>
+<td>1920</td>
+<td>1080</td>
+<td>1.800000</td>
+<td>108</td>
+<td>10.544283</td>
+<td>../../../data/full_videos/jun8/IMG_0860.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>IMG_0861.MOV</td>
+<td>30</td>
+<td>1080</td>
+<td>1920</td>
+<td>7.216667</td>
+<td>433</td>
+<td>8.584579</td>
+<td>../../../data/full_videos/jun8/IMG_0861.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>IMG_1014.MOV</td>
+<td>60</td>
+<td>1080</td>
+<td>1920</td>
+<td>7.400000</td>
+<td>444</td>
+<td>13.103602</td>
+<td>../../../data/full_videos/aug9/IMG_1014.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>IMG_1015.MOV</td>
+<td>60</td>
+<td>1080</td>
+<td>1920</td>
+<td>6.550000</td>
+<td>393</td>
+<td>13.103961</td>
+<td>../../../data/full_videos/aug9/IMG_1015.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>IMG_1016.MOV</td>
+<td>60</td>
+<td>1080</td>
+<td>1920</td>
+<td>5.483333</td>
+<td>329</td>
+<td>13.110048</td>
+<td>../../../data/full_videos/aug9/IMG_1016.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>IMG_1017.MOV</td>
+<td>60</td>
+<td>1080</td>
+<td>1920</td>
+<td>2.866667</td>
+<td>172</td>
+<td>13.134301</td>
+<td>../../../data/full_videos/aug9/IMG_1017.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>IMG_1018.MOV</td>
+<td>30</td>
+<td>2160</td>
+<td>3840</td>
+<td>5.250000</td>
+<td>315</td>
+<td>25.100516</td>
+<td>../../../data/full_videos/aug9/IMG_1018.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>IMG_1019.MOV</td>
+<td>60</td>
+<td>2160</td>
+<td>3840</td>
+<td>4.650000</td>
+<td>279</td>
+<td>53.182729</td>
+<td>../../../data/full_videos/aug9/IMG_1019.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>IMG_1023.MOV</td>
+<td>60</td>
+<td>2160</td>
+<td>3840</td>
+<td>6.883333</td>
+<td>413</td>
+<td>56.143823</td>
+<td>../../../data/full_videos/aug9/IMG_1023.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>IMG_1086.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>2.883333</td>
+<td>173</td>
+<td>15.800221</td>
+<td>../../../data/full_videos/sep14/IMG_1086.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">21</td>
+<td>IMG_1087.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>2.833333</td>
+<td>170</td>
+<td>15.820864</td>
+<td>../../../data/full_videos/sep14/IMG_1087.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">22</td>
+<td>IMG_1088.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>2.433333</td>
+<td>146</td>
+<td>15.823184</td>
+<td>../../../data/full_videos/sep14/IMG_1088.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">23</td>
+<td>IMG_1089.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>4.200000</td>
+<td>252</td>
+<td>15.795585</td>
+<td>../../../data/full_videos/sep14/IMG_1089.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">24</td>
+<td>IMG_1090.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>3.383333</td>
+<td>203</td>
+<td>15.800890</td>
+<td>../../../data/full_videos/sep14/IMG_1090.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">25</td>
+<td>IMG_1091.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>3.750000</td>
+<td>225</td>
+<td>15.787499</td>
+<td>../../../data/full_videos/sep14/IMG_1091.MOV</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">26</td>
+<td>IMG_1092.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>3.200000</td>
+<td>192</td>
+<td>15.800213</td>
+<td>../../../data/full_videos/sep14/IMG_1092.MOV</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">27</td>
+<td>IMG_1093.MOV</td>
+<td>60</td>
+<td>1920</td>
+<td>1080</td>
+<td>3.200000</td>
+<td>192</td>
+<td>15.792813</td>
+<td>../../../data/full_videos/sep14/IMG_1093.MOV</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>Now we have a quick and easily understandable way to extract all the metadata relative to our videos and get a better understaning of where outliers may lie with respect to data quality or frame rate and also to better understand the overall distribution we have amongst our data</p>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
