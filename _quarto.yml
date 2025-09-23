@@ -13,8 +13,8 @@ website:
 format:
   html:
     theme:
-      - cosmo
-      - brand
+      light: flatly
+      dark: darkly
     css: styles.css
 
 
