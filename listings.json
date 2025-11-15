@@ -2,7 +2,10 @@
   {
     "listing": "/index.html",
     "items": [
-      "/posts/data_clipping/00a_data_clipping.html",
+      "/posts/analyze/analysis.html",
+      "/posts/labeling/label.html",
+      "/posts/init_auto_swing_extraction/init_exploration.html",
+      "/posts/manual_clipping/00a_data_clipping.html",
       "/posts/exploratory-data-analysis/eda_nb.html",
       "/posts/welcome/index.html"
     ]
