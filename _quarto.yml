@@ -1,6 +1,8 @@
 project:
   type: website
-
+preview:
+    port: 8080
+    browser: false
 website:
   title: "eagle-swing"
   navbar:
