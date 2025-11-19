@@ -7,10 +7,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Ali Zaidi">
-<meta name="dcterms.date" content="2025-11-15">
-<meta name="description" content="Now that we have our labeled clips, lets run some preliminary analysis over each of their keypoints and see what we can extract">
+<meta name="dcterms.date" content="2025-11-16">
+<meta name="description" content="A moving camera and a single swing per video are now in play">
 
-<title>Kinematic Analysis – eagle-swing</title>
+<title>Lets look at a new persons swings – eagle-swing</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -61,7 +61,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -109,9 +109,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
-
-<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -322,10 +319,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Kinematic Analysis</h1>
+      <h1 class="title">Lets look at a new persons swings</h1>
                   <div>
         <div class="description">
-          Now that we have our labeled clips, lets run some preliminary analysis over each of their keypoints and see what we can extract
+          A moving camera and a single swing per video are now in play
         </div>
       </div>
                           <div class="quarto-categories">
@@ -347,7 +344,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <div>
       <div class="quarto-title-meta-heading">Published</div>
       <div class="quarto-title-meta-contents">
-        <p class="date">November 15, 2025</p>
+        <p class="date">November 16, 2025</p>
       </div>
     </div>
     
@@ -367,208 +364,171 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div id="f9d2b691-20bd-4f71-856b-ae9481ef8660" class="cell" data-execution_count="65">
+<div id="7ae507cc" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-stdout">
-<pre><code>We have 47 total swings from sep14</code></pre>
+<pre><code>We have the following original videos: 
+['IMG_3853', 'IMG_3854', 'IMG_3856', 'IMG_3857', 'IMG_3855', 'IMG_3858'] 
+in this set of swings</code></pre>
 </div>
 </div>
-<div id="4b63a0b2" class="cell" data-execution_count="67">
+<div id="152e9631-63ca-419e-b5e8-8df6be617f34" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_kps(folder):</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    all_files <span class="op">=</span> get_files(folder, extensions<span class="op">=</span><span class="st">'.pkl'</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    clip_files <span class="op">=</span> [<span class="bu">file</span> <span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> all_files <span class="cf">if</span> <span class="bu">file</span>.name[:<span class="dv">3</span>] <span class="op">==</span> <span class="st">'IMG'</span>]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> clip_files</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> flatten_stacked_list(nonflat_list):</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    flattened_list <span class="op">=</span> <span class="bu">list</span>(chain.from_iterable(nonflat_list))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> flattened_list</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_all_swings_df(flat_kp_path_list):</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    path_list_series <span class="op">=</span>  pd.Series(flat_kp_path_list)</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    kp_fname <span class="op">=</span> path_list_series.<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="bu">str</span>(x).split(<span class="st">'/'</span>)[<span class="op">-</span><span class="dv">1</span>])</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    video_name <span class="op">=</span> kp_fname.<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="st">'_'</span>.join(<span class="bu">str</span>(x).split(<span class="st">'_'</span>)[:<span class="dv">2</span>]))</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    swing_idx <span class="op">=</span> kp_fname.<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="bu">str</span>(x).split(<span class="st">'_'</span>)[<span class="dv">3</span>])</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> pd.DataFrame([video_name, swing_idx, </span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>                       kp_fname, path_list_series],</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>                      index<span class="op">=</span>[<span class="st">'video_name'</span>,<span class="st">'swing_idx'</span>, </span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'kp_fname'</span>, <span class="st">'kp_fpath'</span>]</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>                      ).T</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>david_df.kps[<span class="dv">0</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="13">
+<pre><code>(880, 17, 3)</code></pre>
+</div>
+</div>
+<div id="e54af6a3-b9f7-4612-9ec7-a81d521e7982" class="cell" data-execution_count="28">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>david_df.kps[<span class="dv">0</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="28">
+<pre><code>(880, 17, 3)</code></pre>
+</div>
+</div>
+<div id="365b57d0" class="cell" data-execution_count="41">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># #| echo: false</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fig, axes = plot_lower_body_detailed(</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co">#     kps_list=david_df.kps.values[...,:2],</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co">#     scores_list=[david_df.kps.values[...,2]],</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="co">#     labels=david_df.video_name.map(lambda x: x.split('.')[0]),</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">#     params=PlotParams(handedness="right", smooth_win=5, fps=60.0),</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="co">#     title="Swing Comparison - Lower Body"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># );</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="3ae6965a" class="cell" data-execution_count="37">
+<div id="54c87d2a-707a-4496-856f-b9d90b1d81e5" class="cell" data-execution_count="35">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>all_swings_df <span class="op">=</span> get_all_swings_df(flat_kp_file_list)</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>all_swings_df.head(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="37">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">video_name</th>
-<th data-quarto-table-cell-role="th">swing_idx</th>
-<th data-quarto-table-cell-role="th">kp_fname</th>
-<th data-quarto-table-cell-role="th">kp_fpath</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>IMG_1093</td>
-<td>6</td>
-<td>IMG_1093_swing_6_score_None.pkl</td>
-<td>../../../data/full_videos/ymirza/sep14/IMG_1093/keypoints/IMG_1093_swing_6_score_None.pkl</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>IMG_1093</td>
-<td>5</td>
-<td>IMG_1093_swing_5_score_None.pkl</td>
-<td>../../../data/full_videos/ymirza/sep14/IMG_1093/keypoints/IMG_1093_swing_5_score_None.pkl</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>IMG_1093</td>
-<td>4</td>
-<td>IMG_1093_swing_4_score_None.pkl</td>
-<td>../../../data/full_videos/ymirza/sep14/IMG_1093/keypoints/IMG_1093_swing_4_score_None.pkl</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-<div id="587af9e7" class="cell" data-execution_count="38">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">### 99 —&gt; prctice swing w/o score</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>sep14_scores <span class="op">=</span> {</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1086"</span> : [<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">5</span>], <span class="co">#5</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1087"</span> : [<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>],<span class="co"># 5</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1088"</span> : [<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">2</span>],<span class="co"># 5</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1089"</span> : [<span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">3</span>], <span class="co">#7</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1090"</span> : [<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>], <span class="co">#6</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1091"</span> : [<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>], </span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                <span class="co">#6 - 7 w/practice --&gt; start 30 seconds in</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1092"</span> : [<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>,], <span class="co"># 6</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">"IMG_1093"</span> : [<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">99</span>, <span class="dv">2</span>],</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 6 - 7 w/practice --&gt; just drop second to last clip</span></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    }</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<section id="there-are-two-instances-of-practice-swings-without-hitting-the-ball-and-without-a-score-they-are-marked-below" class="level3">
-<h3 class="anchored" data-anchor-id="there-are-two-instances-of-practice-swings-without-hitting-the-ball-and-without-a-score-they-are-marked-below">There are two instances of practice swings without hitting the ball and without a score, they are marked below,</h3>
-<section id="img_1091-there-is-a-practice-swing-at-start-of-video" class="level4">
-<h4 class="anchored" data-anchor-id="img_1091-there-is-a-practice-swing-at-start-of-video">IMG_1091 there is a practice swing at start of video</h4>
-<pre><code>- Easily taken care of by starting the autodetect function 30 seconds into the video -- no longer accounted for in the 47 total</code></pre>
-</section>
-<section id="img_1093-there-is-a-practice-swing-on-the-second-to-last-swing" class="level4">
-<h4 class="anchored" data-anchor-id="img_1093-there-is-a-practice-swing-on-the-second-to-last-swing">IMG_1093 there is a practice swing on the second to last swing</h4>
-<pre><code>- this doesn't interfere with autodetect finding last swting, so we can just ignore that second to last swing in our anaylsis (swing_idx 5)
-- therefore only 46 swings</code></pre>
-</section>
-</section>
-<section id="this-could-maybe-be-easily-tackled-by-also-checking-for-a-score-hand-right-hand-up-left-hand-below-shoulder-and-then-checking-backwards-towards-a-swing-if-theres-no-swing-in-between-that-next-hand-and-this-swing-you-know-this-is-not-a-practice-swing" class="level3">
-<h3 class="anchored" data-anchor-id="this-could-maybe-be-easily-tackled-by-also-checking-for-a-score-hand-right-hand-up-left-hand-below-shoulder-and-then-checking-backwards-towards-a-swing-if-theres-no-swing-in-between-that-next-hand-and-this-swing-you-know-this-is-not-a-practice-swing">This could maybe be easily tackled by also checking for a score hand (right hand up left hand below shoulder and then checking backwards towards a swing, if there’s no swing in between that next hand and this swing, you know this is not a practice swing)</h3>
-<div id="42fb33fc-2c65-4258-b37c-71613ee32cd8" class="cell" data-execution_count="80">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">list</span>(<span class="bu">range</span>(<span class="dv">1</span>,<span class="dv">6</span>,<span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="80">
-<pre><code>[1, 2, 3, 4]</code></pre>
-</div>
-</div>
-<div id="689152e2" class="cell" data-execution_count="90">
-<div class="cell-output cell-output-stdout">
-<pre><code>Most of the swings on this day were scored 1
-scores
-1     17
-2      9
-4      9
-3      7
-5      4
-99     1
-Name: count, dtype: int64</code></pre>
-</div>
-</div>
-<div id="fb8d366f-dc72-4c7c-b8f8-8f3a37bf3130" class="cell" data-execution_count="56">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>top_idxs <span class="op">=</span> [get_frame_plot(x[<span class="dv">30</span>:])[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">30</span> <span class="cf">for</span> x <span class="kw">in</span> test_kps]</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>lowest_frame_count <span class="op">=</span> np.array([kp.shape[<span class="dv">0</span>] <span class="cf">for</span> kp <span class="kw">in</span> test_kps]).<span class="bu">min</span>()</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>highest_peak_frame <span class="op">=</span> np.array(top_idxs).<span class="bu">max</span>()</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>diff <span class="op">=</span> lowest_frame_count <span class="op">-</span> highest_peak_frame</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>start_idx <span class="op">=</span> highest_peak_frame <span class="op">-</span> diff</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>end_idx <span class="op">=</span> highest_peak_frame <span class="op">+</span> diff</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The frame index where the straight arm is found </span><span class="op">\</span></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="ss">in the backswing are: </span><span class="sc">{</span>top_idxs<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The highest peak frame where this is found is: </span><span class="sc">{</span>highest_peak_frame<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The lowest frame count in any of our clips is: </span><span class="sc">{</span>lowest_frame_count<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'We have a difference of </span><span class="sc">{</span>diff<span class="sc">}</span><span class="ss"> frames between where this happens'</span>)</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The indexes we will use to index all these videos are:</span><span class="ch">\n</span><span class="ss"> </span><span class="op">\</span></span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="ss">start:</span><span class="sc">{</span>start_idx<span class="sc">}</span><span class="ss"> and end:</span><span class="sc">{</span>end_idx<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">'''So only 41 frame runway after peak on one video, lets just do 41 on front side. </span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">    will only end up being 1.3 seconds total but lets see how it looks</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">'''</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>top_idxs <span class="op">=</span> [get_frame_plot(x[<span class="dv">30</span>:])[<span class="dv">0</span>] <span class="op">+</span> <span class="dv">30</span> <span class="cf">for</span> x <span class="kw">in</span> david_df.kps]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>lowest_frame_count <span class="op">=</span> np.array([kp.shape[<span class="dv">0</span>] <span class="cf">for</span> kp <span class="kw">in</span> david_df.kps]).<span class="bu">min</span>()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>highest_peak_frame <span class="op">=</span> np.array(top_idxs).<span class="bu">max</span>()</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>diff <span class="op">=</span> lowest_frame_count <span class="op">-</span> highest_peak_frame</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>start_idx <span class="op">=</span> highest_peak_frame <span class="op">-</span> diff</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>end_idx <span class="op">=</span> highest_peak_frame <span class="op">+</span> diff</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The frame index where the straight arm is found </span><span class="op">\</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="ss">in the backswing are:</span><span class="ch">\n</span><span class="ss"> </span><span class="sc">{</span>top_idxs<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The highest peak frame where this is found is: </span><span class="sc">{</span>highest_peak_frame<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The lowest frame count in any of our clips is: </span><span class="sc">{</span>lowest_frame_count<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'We have a difference of </span><span class="sc">{</span>diff<span class="sc">}</span><span class="ss"> frames between where this happens'</span>)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'The indexes we will use to index all these videos are:</span><span class="ch">\n</span><span class="ss"> </span><span class="op">\</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="ss">start:</span><span class="sc">{</span>start_idx<span class="sc">}</span><span class="ss"> and end:</span><span class="sc">{</span>end_idx<span class="sc">}</span><span class="ss">'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>The frame index where the straight arm is found in the backswing are: [131, 138, 136, 133, 136, 141]
-The highest peak frame where this is found is: 141
-The lowest frame count in any of our clips is: 180
-We have a difference of 39 frames between where this happens
+<pre><code>The frame index where the straight arm is found in the backswing are:
+ [624, 667, 693, 958, 779, 658]
+The highest peak frame where this is found is: 958
+The lowest frame count in any of our clips is: 880
+We have a difference of -78 frames between where this happens
 The indexes we will use to index all these videos are:
- start:102 and end:180</code></pre>
+ start:1036 and end:880</code></pre>
 </div>
 </div>
-<div id="365b57d0" class="cell" data-execution_count="60">
+<div id="03403a75-75c1-4be0-8d35-f6240666296e" class="cell" data-execution_count="38">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># code-fold:True</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plot_upper_body_comparison(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    kps_list<span class="op">=</span>[x[...,:<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> test_kps],</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    scores_list<span class="op">=</span>[x[...,<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> test_kps],</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>plot_lbls,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>UpperPlotParams(handedness<span class="op">=</span><span class="st">"right"</span>, smooth_win<span class="op">=</span><span class="dv">5</span>, fps<span class="op">=</span><span class="fl">60.0</span>),</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Swing Comparison - Upper Body"</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>idx_bounds <span class="op">=</span> [(top_idxs[x]<span class="op">-</span><span class="dv">40</span>, top_idxs[x] <span class="op">+</span> <span class="dv">40</span>)<span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(david_df.kps))]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>test_kps <span class="op">=</span> [david_df.kps[x][idx_bounds[x][<span class="dv">0</span>]:idx_bounds[x][<span class="dv">1</span>]] <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(idx_bounds))]</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>idx_bounds</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="38">
+<pre><code>[(584, 664), (627, 707), (653, 733), (918, 998), (739, 819), (618, 698)]</code></pre>
+</div>
+</div>
+<div id="51152dbc-4273-4518-9a96-bdb7e45ec074" class="cell" data-execution_count="40">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plot_lower_body_detailed(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    kps_list<span class="op">=</span>[x[...,:<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> test_kps],</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    scores_list<span class="op">=</span>[x[...,<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> test_kps],</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>david_df.scores, <span class="co">#david_df.video_name.map(lambda x: x.split('.')[0]),</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>PlotParams(handedness<span class="op">=</span><span class="st">"right"</span>, smooth_win<span class="op">=</span><span class="dv">5</span>, fps<span class="op">=</span><span class="fl">60.0</span>),</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Swing Comparison - Lower Body"</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="analysis_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
-<div id="cb130c2f-b8ba-4f3e-96e0-611e415e26dd" class="cell" data-execution_count="61">
+<div id="8b954e7c-ab9a-44f2-b431-217863836b55" class="cell" data-execution_count="42">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.signal <span class="im">import</span> savgol_filter</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_derivative(np_array, axis<span class="op">=</span><span class="dv">0</span>, order<span class="op">=</span><span class="dv">1</span>):</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    tns <span class="op">=</span> torch.tensor(np_array).to(<span class="st">'cuda'</span>)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    derivative <span class="op">=</span> torch.diff(tns, axis<span class="op">=</span>axis, n<span class="op">=</span>order)</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    np_derivative <span class="op">=</span> derivative.cpu().numpy()</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> np_derivative</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>window_size <span class="op">=</span> <span class="dv">21</span>  <span class="co"># must be odd</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>poly_order <span class="op">=</span> <span class="dv">3</span>    <span class="co"># polynomial degree (typically 2-4)</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> savgol_smooth(kps, window_size<span class="op">=</span><span class="dv">10</span>):</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    window_len <span class="op">=</span> window_size <span class="op">*</span> <span class="dv">2</span> <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    smoothed <span class="op">=</span> savgol_filter(kps, window_length<span class="op">=</span>window_len, polyorder<span class="op">=</span><span class="dv">3</span>, axis<span class="op">=</span><span class="dv">0</span>)    </span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> smoothed</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a><span class="co">#smoothed = savgol_filter(test_kps[0], window_length=21, polyorder=3, axis=0)</span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>smooth_kps <span class="op">=</span> [savgol_smooth(x) <span class="cf">for</span> x <span class="kw">in</span> test_kps]</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>first_order_smooth <span class="op">=</span> [get_derivative(kps) <span class="cf">for</span> kps <span class="kw">in</span> smooth_kps]</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>second_order_smooth <span class="op">=</span> [get_derivative(kps, order<span class="op">=</span><span class="dv">2</span>) <span class="cf">for</span> kps <span class="kw">in</span> smooth_kps]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="8d39f643-185e-47d5-8e77-f9bd4c7362b3" class="cell" data-execution_count="45">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plot_lower_body_detailed(</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    kps_list<span class="op">=</span>[x[...,:<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> test_kps],</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    scores_list<span class="op">=</span>[x[...,<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> test_kps],</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>plot_lbls,</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    kps_list<span class="op">=</span>[x[...,:<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> smooth_kps],</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    scores_list<span class="op">=</span>[x[...,<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> smooth_kps],</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>david_df.scores, <span class="co">#david_df.video_name.map(lambda x: x.split('.')[0]),</span></span>
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>PlotParams(handedness<span class="op">=</span><span class="st">"right"</span>, smooth_win<span class="op">=</span><span class="dv">5</span>, fps<span class="op">=</span><span class="fl">60.0</span>),</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Swing Comparison - Lower Body"</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Swing Comparison - Lower Body -- Smoothed out"</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="analysis_files/figure-html/cell-19-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="be164bdc-7945-4688-b38e-cfadd93d4760" class="cell" data-execution_count="46">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plot_upper_body_comparison(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    kps_list<span class="op">=</span>[x[...,:<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> smooth_kps],</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    scores_list<span class="op">=</span>[x[...,<span class="dv">2</span>][<span class="dv">10</span>:<span class="dv">45</span>] <span class="cf">for</span> x <span class="kw">in</span> smooth_kps],</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    labels<span class="op">=</span>david_df.scores,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    params<span class="op">=</span>UpperPlotParams(handedness<span class="op">=</span><span class="st">"right"</span>, smooth_win<span class="op">=</span><span class="dv">5</span>, fps<span class="op">=</span><span class="fl">60.0</span>),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">"Swing Comparison - Upper Body"</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-16-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
 </div>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
