@@ -371,7 +371,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 - Club head information</code></pre>
 <section id="by-using-abstract-functions-we-can-compute-the-distance-and-angles-between-components-and-try-to-extract-meaningful-information-fromm-their-relationship-as-the-swing-progresses" class="level4">
 <h4 class="anchored" data-anchor-id="by-using-abstract-functions-we-can-compute-the-distance-and-angles-between-components-and-try-to-extract-meaningful-information-fromm-their-relationship-as-the-swing-progresses">By using abstract functions, we can compute the distance and angles between components and try to extract meaningful information fromm their relationship as the swing progresses</h4>
-<div id="bc2d679a-cdeb-4e08-9b06-9c58b8bf4f8e" class="cell" data-execution_count="8">
+<div id="bc2d679a-cdeb-4e08-9b06-9c58b8bf4f8e" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> TypeVar, Generic, List, Optional, Callable</span>
@@ -381,7 +381,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> cv2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="175abc70-3ef0-4489-845a-40536103c36c" class="cell" data-execution_count="50">
+<div id="175abc70-3ef0-4489-845a-40536103c36c" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SwingMetaData:</span>
@@ -416,27 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> video</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="c628d1fb-4417-4d5e-98d0-39643b1ab2b0" class="cell" data-execution_count="49">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>swing_meta.str_path.split(<span class="st">'.'</span>)[<span class="op">-</span><span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="49">
-<pre><code>'/data/full_videos/ymirza/sep14/IMG_1093/keypoints/IMG_1093_swing_6_score_None'</code></pre>
-</div>
-</div>
-<div id="a080d17f-6cf3-4a58-a1c6-b73cacf5d6f3" class="cell" data-execution_count="54">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>swing_meta <span class="op">=</span> SwingMetaData(files[<span class="dv">0</span>], get_swing_idx<span class="op">=</span><span class="va">True</span>, get_score<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Our meta class can store useful information like the filename </span><span class="ch">\n</span><span class="ss"> ---&gt;</span><span class="op">\</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="ss"> </span><span class="sc">{</span>swing_meta<span class="sc">.</span>file_name<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'Also the swing index </span><span class="ch">\n</span><span class="ss"> ---&gt;</span><span class="op">\</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ss"> </span><span class="sc">{</span>swing_meta<span class="sc">.</span>swing_idx<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'And the score (when added) </span><span class="ch">\n</span><span class="ss"> ---&gt;</span><span class="op">\</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="ss"> </span><span class="sc">{</span>swing_meta<span class="sc">.</span>score<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f'For plotting and output purposes, a path to our labeled video is also available'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
+<div id="a080d17f-6cf3-4a58-a1c6-b73cacf5d6f3" class="cell" data-execution_count="8">
 <div class="cell-output cell-output-stdout">
 <pre><code>Our meta class can store useful information like the filename 
  ---&gt; IMG_1093_swing_6_score_None
@@ -447,64 +427,64 @@ And the score (when added)
 For plotting and output purposes, a path to our labeled video is also available</code></pre>
 </div>
 </div>
-<div id="a56f6fc1-9707-4031-b3af-8406302aca19" class="cell" data-execution_count="11">
+<div id="a56f6fc1-9707-4031-b3af-8406302aca19" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SwingKeypointData(SwingMetaData):</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Class to handle keypoint data</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Will take a videos metadata and pull down keypoint values and scores</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, video_path):</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(video_path)</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">#self.metadata = metadata</span></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.kp_dicts <span class="op">=</span> <span class="va">self</span>.get_kp_dicts()</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.key_points <span class="op">=</span> <span class="va">self</span>.get_keypoints()</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.scores <span class="op">=</span> <span class="va">self</span>.get_scores()</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.kps <span class="op">=</span> np.concatenate([<span class="va">self</span>.key_points, np.expand_dims(<span class="va">self</span>.scores, <span class="op">-</span><span class="dv">1</span>)], axis<span class="op">=</span><span class="dv">2</span>)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_kp_dicts(<span class="va">self</span>):</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Get the frame by frame output dicts from pose estimation models</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(<span class="va">self</span>.str_path, <span class="st">'rb'</span>) <span class="im">as</span> f:</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>            loaded_dicts <span class="op">=</span> pickle.load(f)</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> loaded_dicts</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_keypoints(<span class="va">self</span>):</span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        kp_dicts <span class="op">=</span> <span class="va">self</span>.kp_dicts</span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.stack([<span class="va">self</span>.kp_dicts[key][<span class="st">'keypoints'</span>] <span class="cf">for</span> key <span class="kw">in</span> kp_dicts.keys()])</span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_scores(<span class="va">self</span>):</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>        kp_dicts <span class="op">=</span> <span class="va">self</span>.kp_dicts</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.stack([<span class="va">self</span>.kp_dicts[key][<span class="st">'keypoint_scores'</span>] <span class="cf">for</span> key <span class="kw">in</span> kp_dicts.keys()])</span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_frame(<span class="va">self</span>, idx):</span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>        <span class="co">''' Just grabs a single frames keypoints and scores</span></span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a>        kps <span class="op">=</span> <span class="va">self</span>.key_points[idx]</span>
-<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> <span class="va">self</span>.scores[idx]</span>
-<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.column_stack((kps, scores))</span>
-<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_frames(<span class="va">self</span>, indexes):</span>
-<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a>        <span class="co">'''</span></span>
-<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a><span class="co">        num_idxs = len(Indexes)</span></span>
-<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a><span class="co">        Takes a list of indexes and returns an array wof [num_idxs, 17, 3]</span></span>
-<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a><span class="co">        [1] 17 keypoint markers</span></span>
-<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a><span class="co">        [2] 3 keypoint values/certaintainty (X, Y, Score)</span></span>
-<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
-<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.stack([<span class="va">self</span>.get_frame(idx) <span class="cf">for</span> idx <span class="kw">in</span> indexes])</span>
-<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__len__</span>(<span class="va">self</span>):</span>
-<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">len</span>(<span class="va">self</span>.key_points)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SwingKeypointData(SwingMetaData):</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Class to handle keypoint data</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co">    Will take a videos metadata and pull down keypoint values and scores</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, video_path):</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(video_path)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        <span class="co">#self.metadata = metadata</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.kp_dicts <span class="op">=</span> <span class="va">self</span>.get_kp_dicts()</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.key_points <span class="op">=</span> <span class="va">self</span>.get_keypoints()</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.scores <span class="op">=</span> <span class="va">self</span>.get_scores()</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.kps <span class="op">=</span> np.concatenate([<span class="va">self</span>.key_points, np.expand_dims(<span class="va">self</span>.scores, <span class="op">-</span><span class="dv">1</span>)], axis<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_kp_dicts(<span class="va">self</span>):</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Get the frame by frame output dicts from pose estimation models</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>        <span class="cf">with</span> <span class="bu">open</span>(<span class="va">self</span>.str_path, <span class="st">'rb'</span>) <span class="im">as</span> f:</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>            loaded_dicts <span class="op">=</span> pickle.load(f)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> loaded_dicts</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_keypoints(<span class="va">self</span>):</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>        kp_dicts <span class="op">=</span> <span class="va">self</span>.kp_dicts</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.stack([<span class="va">self</span>.kp_dicts[key][<span class="st">'keypoints'</span>] <span class="cf">for</span> key <span class="kw">in</span> kp_dicts.keys()])</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_scores(<span class="va">self</span>):</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        kp_dicts <span class="op">=</span> <span class="va">self</span>.kp_dicts</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.stack([<span class="va">self</span>.kp_dicts[key][<span class="st">'keypoint_scores'</span>] <span class="cf">for</span> key <span class="kw">in</span> kp_dicts.keys()])</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_frame(<span class="va">self</span>, idx):</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>        <span class="co">''' Just grabs a single frames keypoints and scores</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>        kps <span class="op">=</span> <span class="va">self</span>.key_points[idx]</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>        scores <span class="op">=</span> <span class="va">self</span>.scores[idx]</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.column_stack((kps, scores))</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> get_frames(<span class="va">self</span>, indexes):</span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>        <span class="co">'''</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co">        num_idxs = len(Indexes)</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a><span class="co">        Takes a list of indexes and returns an array wof [num_idxs, 17, 3]</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a><span class="co">        [1] 17 keypoint markers</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="co">        [2] 3 keypoint values/certaintainty (X, Y, Score)</span></span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.stack([<span class="va">self</span>.get_frame(idx) <span class="cf">for</span> idx <span class="kw">in</span> indexes])</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__len__</span>(<span class="va">self</span>):</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">len</span>(<span class="va">self</span>.key_points)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="c106789a-d55f-45c2-bc8f-18fbcd38fccb" class="cell" data-execution_count="68">
+<div id="c106789a-d55f-45c2-bc8f-18fbcd38fccb" class="cell" data-execution_count="10">
 <div class="cell-output cell-output-stdout">
 <pre><code>with our SwingKeyPointData class, we can store the raw keypoint values
 A swings full keypoints/confidence array would have shape: (180, 17, 3)
@@ -518,51 +498,51 @@ If we are interested in seeing just confidence values we can access
 </section>
 <section id="now-we-are-in-a-position-to-create-a-superclass-that-inherits-these-components-and-stores-a-more-rich-representation-of-our-data" class="level3">
 <h3 class="anchored" data-anchor-id="now-we-are-in-a-position-to-create-a-superclass-that-inherits-these-components-and-stores-a-more-rich-representation-of-our-data">Now we are in a position to create a superclass that inherits these components and stores a more rich representation of our data</h3>
-<div id="72491034-33c9-4f11-84a3-82a78935b268" class="cell" data-execution_count="157">
+<div id="72491034-33c9-4f11-84a3-82a78935b268" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> KpExtractor(SwingMetaData):</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, </span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                 file_name,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                 get_swing_idx<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                 get_score<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                 score_threshold<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(file_name, </span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                         get_swing_idx, </span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                         get_score)</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.keypoint_data <span class="op">=</span> SwingKeypointData(file_name)</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.score_threshold <span class="op">=</span> score_threshold</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.kps <span class="op">=</span> <span class="va">self</span>.threshold_score(<span class="va">self</span>.keypoint_data, score_threshold)</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.coco_idxs <span class="op">=</span> {<span class="st">"L_SH"</span>:<span class="dv">5</span>, <span class="st">"R_SH"</span>:<span class="dv">6</span>, <span class="st">"L_EL"</span>:<span class="dv">7</span>, <span class="st">"R_EL"</span>:<span class="dv">8</span>, </span>
-<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>             <span class="st">"L_WR"</span>:<span class="dv">9</span>, <span class="st">"R_WR"</span>:<span class="dv">10</span>, <span class="st">"L_HI"</span>:<span class="dv">11</span>, <span class="st">"R_HI"</span>:<span class="dv">12</span>, <span class="co">#HIP</span></span>
-<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>             <span class="st">"L_KN"</span>:<span class="dv">13</span>, <span class="st">"R_KN"</span>:<span class="dv">14</span>, <span class="st">"L_ANK"</span>:<span class="dv">15</span>, <span class="st">"R_ANK"</span>:<span class="dv">16</span>}</span>
-<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Dynamically create attributes using setattr</span></span>
-<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> attr_name, coco_key <span class="kw">in</span> <span class="va">self</span>.coco_idxs.items():</span>
-<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>            kp_val <span class="op">=</span> <span class="va">self</span>.kps[:, coco_key, :].astype(<span class="bu">float</span>).copy()</span>
-<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>            <span class="bu">setattr</span>(<span class="va">self</span>, attr_name.lower(), kp_val)  <span class="co"># Lowercase only</span></span>
-<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> threshold_score(<span class="va">self</span>, kps, threshold_value<span class="op">=</span><span class="fl">0.5</span>):</span>
-<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> threshold_value <span class="kw">is</span> <span class="va">None</span>: </span>
-<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>.keypoint_data.kps.astype(<span class="bu">float</span>).copy()</span>
-<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># punch up score values to a threshold</span></span>
-<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>        kps <span class="op">=</span> <span class="va">self</span>.keypoint_data.kps.astype(<span class="bu">float</span>).copy()</span>
-<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> kps[..., <span class="dv">2</span>] <span class="op">&lt;</span> threshold_value</span>
-<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>        kps[mask, <span class="dv">2</span>] <span class="op">=</span> threshold_value</span>
-<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> kps</span>
-<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># helper function to index specific joints</span></span>
-<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__getattr__</span>(<span class="va">self</span>, name):</span>
-<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Convert requested attribute to lowercase and try to find it</span></span>
-<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a>        lower_name <span class="op">=</span> name.lower()</span>
-<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
-<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="bu">object</span>.<span class="fu">__getattribute__</span>(<span class="va">self</span>, lower_name)</span>
-<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">AttributeError</span>:</span>
-<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">AttributeError</span>(<span class="ss">f"'</span><span class="sc">{</span><span class="bu">type</span>(<span class="va">self</span>)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss">' object has no attribute '</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> KpExtractor(SwingMetaData):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, </span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                 file_name,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                 get_swing_idx<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>                 get_score<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                 score_threshold<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="bu">super</span>().<span class="fu">__init__</span>(file_name, </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>                         get_swing_idx, </span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>                         get_score)</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.keypoint_data <span class="op">=</span> SwingKeypointData(file_name)</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.score_threshold <span class="op">=</span> score_threshold</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.kps <span class="op">=</span> <span class="va">self</span>.threshold_score(<span class="va">self</span>.keypoint_data, score_threshold)</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.coco_idxs <span class="op">=</span> {<span class="st">"L_SH"</span>:<span class="dv">5</span>, <span class="st">"R_SH"</span>:<span class="dv">6</span>, <span class="st">"L_EL"</span>:<span class="dv">7</span>, <span class="st">"R_EL"</span>:<span class="dv">8</span>, </span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>             <span class="st">"L_WR"</span>:<span class="dv">9</span>, <span class="st">"R_WR"</span>:<span class="dv">10</span>, <span class="st">"L_HI"</span>:<span class="dv">11</span>, <span class="st">"R_HI"</span>:<span class="dv">12</span>, <span class="co">#HIP</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>             <span class="st">"L_KN"</span>:<span class="dv">13</span>, <span class="st">"R_KN"</span>:<span class="dv">14</span>, <span class="st">"L_ANK"</span>:<span class="dv">15</span>, <span class="st">"R_ANK"</span>:<span class="dv">16</span>}</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Dynamically create attributes using setattr</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> attr_name, coco_key <span class="kw">in</span> <span class="va">self</span>.coco_idxs.items():</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            kp_val <span class="op">=</span> <span class="va">self</span>.kps[:, coco_key, :].astype(<span class="bu">float</span>).copy()</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            <span class="bu">setattr</span>(<span class="va">self</span>, attr_name.lower(), kp_val)  <span class="co"># Lowercase only</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> threshold_score(<span class="va">self</span>, kps, threshold_value<span class="op">=</span><span class="fl">0.5</span>):</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> threshold_value <span class="kw">is</span> <span class="va">None</span>: </span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="va">self</span>.keypoint_data.kps.astype(<span class="bu">float</span>).copy()</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># punch up score values to a threshold</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>        kps <span class="op">=</span> <span class="va">self</span>.keypoint_data.kps.astype(<span class="bu">float</span>).copy()</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> kps[..., <span class="dv">2</span>] <span class="op">&lt;</span> threshold_value</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>        kps[mask, <span class="dv">2</span>] <span class="op">=</span> threshold_value</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> kps</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># helper function to index specific joints</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__getattr__</span>(<span class="va">self</span>, name):</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Convert requested attribute to lowercase and try to find it</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        lower_name <span class="op">=</span> name.lower()</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">try</span>:</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> <span class="bu">object</span>.<span class="fu">__getattribute__</span>(<span class="va">self</span>, lower_name)</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>        <span class="cf">except</span> <span class="pp">AttributeError</span>:</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">AttributeError</span>(<span class="ss">f"'</span><span class="sc">{</span><span class="bu">type</span>(<span class="va">self</span>)<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss">' object has no attribute '</span><span class="sc">{</span>name<span class="sc">}</span><span class="ss">'"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="da18f8b8-13cf-4ea4-8b2e-e44f5a748b4f" class="cell" data-execution_count="158">
+<div id="da18f8b8-13cf-4ea4-8b2e-e44f5a748b4f" class="cell" data-execution_count="86">
 <div class="cell-output cell-output-stdout">
 <pre><code>With our KpExtractor class, we can interrogate our data more effectively
 A swings full keypoints/confidence can still be found with ".kp" paradigm 
@@ -573,168 +553,29 @@ If we want to access just keypoints of a single point -- can access this
     "YY" corresponds to a keypoint "L_WR--&gt; left wrist</code></pre>
 </div>
 </div>
-<div id="c002fe76-17ae-47a5-9e6a-3c5e4ec19f92" class="cell" data-execution_count="160">
+<div id="c002fe76-17ae-47a5-9e6a-3c5e4ec19f92" class="cell" data-execution_count="87">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>l_sh <span class="op">=</span> kp_0.l_sh</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>r_sh <span class="op">=</span> kp_0.r_sh</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>l_wr <span class="op">=</span> kp_0.l_wr</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>r_wr <span class="op">=</span> kp_0.r_wr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>l_sh <span class="op">=</span> kp_0.l_sh</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>r_sh <span class="op">=</span> kp_0.r_sh</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>l_wr <span class="op">=</span> kp_0.l_wr</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>r_wr <span class="op">=</span> kp_0.r_wr</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="c2baa7df-c7ec-483d-8f7a-86b23952eaae" class="cell" data-execution_count="165">
+<div id="c2baa7df-c7ec-483d-8f7a-86b23952eaae" class="cell" data-execution_count="88">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>l_sh.shape, l_sh[:, <span class="dv">0</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>l_sh.shape, l_sh[:, <span class="dv">0</span>].shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="165">
+<div class="cell-output cell-output-display" data-execution_count="88">
 <pre><code>((180, 3), (180,))</code></pre>
 </div>
 </div>
-</section>
-<section id="now-lets-flesh-out-some-functions-to-derive-useful-distance-and-degree-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="now-lets-flesh-out-some-functions-to-derive-useful-distance-and-degree-relationships">Now lets flesh out some functions to derive useful distance and degree relationships</h3>
-<p>*** must keep in mind the following: - x increases to the right → same as normal. - y usually increases downwards, opposite of standard Cartesian. - If we want “upwards” to be positive angle (like in usual math diagrams), &nbsp; arctan2 angles will be flipped vertically compared to that intuition. - If we want a more “math-like” angle where up is positive y –&gt; negate dy</p>
-<div id="acb567f1-d14c-4037-91f9-a037d8f4cf70" class="cell" data-execution_count="175">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_kp_xy_components(kps):</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="co"># [0] index is horizontal value (x) and [1] is vertical (y)</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    x_component <span class="op">=</span> kps[:, <span class="dv">0</span>]</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    y_component <span class="op">=</span> kps[:, <span class="dv">1</span>]</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x_component, y_component</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_angle_degree(first_kps, second_kps):</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    first_x_arr, first_y_arr <span class="op">=</span> get_kp_xy_components(first_kps)</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    second_x_arr, second_y_arr <span class="op">=</span> get_kp_xy_components(second_kps)</span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> first_x_arr <span class="op">-</span> second_x_arr</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    dy <span class="op">=</span> first_y_arr <span class="op">-</span> second_y_arr</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    angle_radians <span class="op">=</span> np.arctan2(dy, dx)</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    angle_degree <span class="op">=</span> np.degrees(angle_radians)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> angle_degree</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_kps_distance(first_kps, second_kps):</span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    first_x_arr, first_y_arr <span class="op">=</span> get_kp_xy_components(first_kps)</span>
-<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    second_x_arr, second_y_arr <span class="op">=</span> get_kp_xy_components(second_kps)</span>
-<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>    dx <span class="op">=</span> first_x_arr <span class="op">-</span> second_x_arr</span>
-<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>    dy <span class="op">=</span> first_y_arr <span class="op">-</span> second_y_arr</span>
-<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    distance <span class="op">=</span> np.sqrt(dx<span class="op">**</span><span class="dv">2</span> <span class="op">+</span> dy<span class="op">**</span><span class="dv">2</span>)</span>
-<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> distance</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<p>From Claude: <br> ** Image Coordinate System ** <br> –&gt; In video/image coordinates, the y-axis increases downward (not upward like mathematical convention). This means: <br> • An angle of 0° points right <br> • An angle of 90° points down (not up) <br> • An angle of -90° points up (not down) <br></p>
-<p>** Angle Range ** <br> –&gt; The function returns angles in [-180, 180], where negative angles represent clockwise rotation from the positive x-axis and positive angles represent counter-clockwise rotation.</p>
-</section>
-<section id="we-need-to-account-for-potential-perturbations-such-as-from-the-camera-orientation-and-also-potenital-shake-in-the-camera-itself-a-simple-way-to-manage-this-is-to-normalize-the-coordinates-relative-to-something-within-the-body" class="level3">
-<h3 class="anchored" data-anchor-id="we-need-to-account-for-potential-perturbations-such-as-from-the-camera-orientation-and-also-potenital-shake-in-the-camera-itself-a-simple-way-to-manage-this-is-to-normalize-the-coordinates-relative-to-something-within-the-body">We need to account for potential perturbations – such as from the camera orientation and also potenital shake in the camera itself, a simple way to manage this is to normalize the coordinates relative to something within the body</h3>
-<pre><code>- This way absolute position values won't matter --&gt; if the camera moves up, the height values of the feet will have shifted in the frame, but the player did not move up in the vertical dimension
-- Can be done by dividing all keypoint values by a refernce distance that remains anatomically stable frame by frame
-- These people tried out a bunch of different normalization techniques and a bunch worked well:
-    - https://www.mdpi.com/1424-8220/22/11/4245
-    - Look at the points separated in their own space once normalized on right!</code></pre>
-<p><img src="paper_img.png" class="img-fluid"></p>
-</section>
-<section id="why-is-this-important" class="level3">
-<h3 class="anchored" data-anchor-id="why-is-this-important">Why is this important?</h3>
-<section id="camera-distance-focal-length-and-resolution-create-different-pixel-space-scales-for-the-same-physical-movements.-normalization-converts-absolute-pixel-distances-into-scale-invariant-relative-proportions-making-measurements-comparable-across-videos.-for-example-torso-based-normalization-maintains-consistent-body-proportions-while-allowing-limb-movements-to-vary-naturally" class="level4">
-<h4 class="anchored" data-anchor-id="camera-distance-focal-length-and-resolution-create-different-pixel-space-scales-for-the-same-physical-movements.-normalization-converts-absolute-pixel-distances-into-scale-invariant-relative-proportions-making-measurements-comparable-across-videos.-for-example-torso-based-normalization-maintains-consistent-body-proportions-while-allowing-limb-movements-to-vary-naturally">Camera distance, focal length, and resolution create different pixel-space scales for the same physical movements. Normalization converts absolute pixel distances into scale-invariant relative proportions, making measurements comparable across videos. For example, torso-based normalization maintains consistent body proportions while allowing limb movements to vary naturally</h4>
-</section>
-</section>
-<section id="after-normalization-our-get_distance-returns-values-like-0.99-99-of-torso-length-instead-of-158-pixels" class="level2">
-<h2 class="anchored" data-anchor-id="after-normalization-our-get_distance-returns-values-like-0.99-99-of-torso-length-instead-of-158-pixels">After normalization, our get_distance() returns values like 0.99 (99% of torso length) instead of 158 pixels</h2>
-<section id="enabling-direct-comparison-between-different-recording-setups" class="level3">
-<h3 class="anchored" data-anchor-id="enabling-direct-comparison-between-different-recording-setups">Enabling direct comparison between different recording setups</h3>
-<div id="33cf9df0-bdae-4758-8ae7-60250987afd6" class="cell" data-execution_count="215">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalize_by_torso_diagonal(kps, l_sh_to_r_hip<span class="op">=</span><span class="va">True</span>):</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> l_sh_to_r_hip: <span class="co">#left shoulder to right hip</span></span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>        shoulder <span class="op">=</span> kps.l_sh</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>        hip <span class="op">=</span> kps.r_hi</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        shoulder <span class="op">=</span> kps.r_sh</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        hip <span class="op">=</span> kps.l_hi</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    torso_diagonal <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>((shoulder <span class="op">-</span> hip)<span class="op">**</span><span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>))</span>
-<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    normalized_kps <span class="op">=</span> kps.kps <span class="op">/</span> torso_diagonal[:, np.newaxis, np.newaxis]</span>
-<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> normalized_kps</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="79167132-4185-46f9-bf3b-3cfeb79f9c89" class="cell" data-execution_count="225">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>left_to_right <span class="op">=</span> normalize_by_torso_diagonal(kp_0, l_sh_to_r_hip<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">#right_to_left = normalize_by_torso_diagonal(kp_0, l_sh_to_r_hip=False)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="9639d276-15d1-4ea8-ac8f-58f5d5e9cdf4" class="cell" data-execution_count="207">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> normalize_by_average_torso(kps):</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    left_shoulder <span class="op">=</span> kps.l_sh</span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    right_shoulder <span class="op">=</span> kps.r_sh</span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    left_hip <span class="op">=</span> kps.l_hi</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    right_hip <span class="op">=</span> kps.r_hi</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    diagonal1 <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>((left_shoulder <span class="op">-</span> right_hip)<span class="op">**</span><span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>))</span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>    diagonal2 <span class="op">=</span> np.sqrt(np.<span class="bu">sum</span>((right_shoulder <span class="op">-</span> left_hip)<span class="op">**</span><span class="dv">2</span>, axis<span class="op">=</span><span class="dv">1</span>))</span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>    avg_torso <span class="op">=</span> (diagonal1 <span class="op">+</span> diagonal2) <span class="op">/</span> <span class="fl">2.0</span></span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> kps.kps <span class="op">/</span> avg_torso[:, np.newaxis, np.newaxis]</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>normalize_by_average_torso(kp_0).shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="207">
-<pre><code>(180, 17, 3)</code></pre>
-</div>
-</div>
-</section>
-<section id="ok-so-we-have-some-distance-and-angle-functionality-and-we-also-have-a-way-to-normalize-our-keypoints-so-lets-add-the-potential-for-some-additional-geometric-relationships" class="level3">
-<h3 class="anchored" data-anchor-id="ok-so-we-have-some-distance-and-angle-functionality-and-we-also-have-a-way-to-normalize-our-keypoints-so-lets-add-the-potential-for-some-additional-geometric-relationships">Ok so we have some distance and angle functionality and we also have a way to normalize our keypoints so lets add the potential for some additional geometric relationships</h3>
-<ol type="1">
-<li>Vector level features between two points with a unit vector
-<ul>
-<li>tells you where second point is relative to the first <br> ** Independent of distance</li>
-</ul></li>
-<li>Angle between segments –&gt; use joint angles ABC to find angle @ B
-<ul>
-<li>elbow angle (shoulder, elbow, wrist)</li>
-<li>wrist cock (forearm - club shaft angle)</li>
-<li>spine angle (hip - shoulder - head)</li>
-</ul></li>
-<li>Pose relative / frame-relative geormetry
-<ul>
-<li>Instead of absolute coordianates, make everything relative to some anchor <br>
-<ul>
-<li>subtract pelvis/hip center from all key points <br></li>
-<li>OPTIONALLY: rotate coordinates so shoulders define a horizontal “body x-axis” <br> <b> * Gives us features that are: <b> <br></b></b></li><b><b>
-<li>translation-invariant (location in frame irrelevant)<br></li>
-<li>closer to “true” body pose, especially if the camera jitters <br></li>
-</b></b></ul></li><b><b>
-</b></b></ul></li><b><b>
-<li>Signed area / “rotation” type features (points ABC)
-<ul>
-<li>Signed area + cross product tells us: - How “curved” or rotated the triplet is - On which side one point lies relative to a line ** Will help when detecting: **</li>
-<li>open vs closed shoulders/hips</li>
-<li>left vs right tilt etc</li>
-</ul></li>
-</b></b></ol><b><b>
-</b></b></section><b><b>
-<section id="all-of-that-is-useful-but-since-were-working-with-sequence-data-of-a-video-we-cant-leave-out-changes-over-time-of-how-these-keypoints-evolve-in-the-swing" class="level3">
-<h3 class="anchored" data-anchor-id="all-of-that-is-useful-but-since-were-working-with-sequence-data-of-a-video-we-cant-leave-out-changes-over-time-of-how-these-keypoints-evolve-in-the-swing">All of that is useful but since we’re working with sequence data of a video, we can’t leave out changes over time of how these keypoints evolve in the swing</h3>
-<pre><code>- Velocity of distance
-    - how fast two points are moving apart and closer
-- Velocity of angle
-    - Angular speed of a joint -- is the right elbow hitting 90 degrees faster on a 5 swing that a 1 swing?
-- Acceleration of distance and angle:
-    - the second derivative tells you the rate of change of velocity, could be useful at transition points and much more
-    --&gt; https://www.perplexity.ai/search/58255efe-03e6-48b0-87c3-0ffdc6c75edf</code></pre>
 
 
 </section>
-</b></b></section><b><b>
 
-</b></b></main><b><b> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right
@@ -1147,9 +988,9 @@ If we want to access just keypoints of a single point -- can access this
     }
   });
   </script>
-</b></b></div><b><b> <!-- /content -->
+</div> <!-- /content -->
 
 
 
 
-</b></b></body></html>
+</body></html>

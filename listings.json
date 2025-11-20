@@ -2,6 +2,8 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/keypoint_visualizer/index.html",
+      "/posts/normalize_swings/index.html",
       "/posts/swing_dataclass/index.html",
       "/posts/camera_shake/index.html",
       "/posts/analyze/analysis.html",
