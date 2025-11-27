@@ -28,7 +28,6 @@ def save_keypoints(results, fname, out_dir):
         pickle.dump(indexed_data, f)
 
 
-
 def get_labeler(model_name='vit'):
     if model_name == 'vit':
         model_name = 'td-hm_ViTPose-huge_8xb64-210e_coco-256x192'
