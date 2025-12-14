@@ -3,6 +3,7 @@
     "listing": "/index.html",
     "items": [
       "/posts/auto_score/Untitled.html",
+      "/posts/vision_model/index.html",
       "/posts/smooth_movement/smooth.html",
       "/posts/find_landmarks/index.html",
       "/posts/decision_trees/index.html",

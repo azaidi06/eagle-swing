@@ -10,63 +10,67 @@
   </url>
   <url>
     <loc>https://azaidi06.github.io/eagle-swing/posts/keypoint_visualizer/index.html</loc>
-    <lastmod>2025-11-21T18:21:01.628Z</lastmod>
+    <lastmod>2025-12-14T04:01:57.725Z</lastmod>
   </url>
   <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/auto_score/Untitled.html</loc>
-    <lastmod>2025-12-08T17:36:43.432Z</lastmod>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/vision_model/index.html</loc>
+    <lastmod>2025-12-14T05:27:45.510Z</lastmod>
   </url>
   <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/exploratory-data-analysis/eda_nb.html</loc>
-    <lastmod>2025-09-23T03:07:17.636Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/welcome/index.html</loc>
-    <lastmod>2025-09-22T20:12:04.698Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/find_score_hand/index.html</loc>
-    <lastmod>2025-12-13T04:31:17.395Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/find_landmarks/index.html</loc>
-    <lastmod>2025-12-13T04:53:34.472Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/new_golfer/index.html</loc>
-    <lastmod>2025-12-03T20:57:39.353Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/analyze/analysis.html</loc>
-    <lastmod>2025-11-20T15:44:55.612Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/eagleswing/data_class_testing.html</loc>
-    <lastmod>2025-11-22T03:17:21.725Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/normalize_swings/index.html</loc>
-    <lastmod>2025-11-21T04:55:17.977Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/swing_dataclass/index.html</loc>
-    <lastmod>2025-11-20T04:34:24.718Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/manual_clipping/00a_data_clipping.html</loc>
-    <lastmod>2025-11-14T03:42:33.969Z</lastmod>
-  </url>
-  <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/temporal_evolution/index.html</loc>
-    <lastmod>2025-12-04T03:27:17.796Z</lastmod>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/smooth_movement/smooth.html</loc>
+    <lastmod>2025-12-13T04:39:13.732Z</lastmod>
   </url>
   <url>
     <loc>https://azaidi06.github.io/eagle-swing/posts/init_auto_swing_extraction/init_exploration.html</loc>
     <lastmod>2025-11-14T03:48:05.244Z</lastmod>
   </url>
   <url>
-    <loc>https://azaidi06.github.io/eagle-swing/posts/smooth_movement/smooth.html</loc>
-    <lastmod>2025-12-13T04:39:13.732Z</lastmod>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/temporal_evolution/index.html</loc>
+    <lastmod>2025-12-04T03:27:17.796Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/manual_clipping/00a_data_clipping.html</loc>
+    <lastmod>2025-11-14T03:42:33.969Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/swing_dataclass/index.html</loc>
+    <lastmod>2025-11-20T04:34:24.718Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/normalize_swings/index.html</loc>
+    <lastmod>2025-11-21T04:55:17.977Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/eagleswing/data_class_testing.html</loc>
+    <lastmod>2025-11-22T03:17:21.725Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/analyze/analysis.html</loc>
+    <lastmod>2025-11-20T15:44:55.612Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/new_golfer/index.html</loc>
+    <lastmod>2025-12-03T20:57:39.353Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/find_landmarks/index.html</loc>
+    <lastmod>2025-12-14T06:00:26.058Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/find_score_hand/index.html</loc>
+    <lastmod>2025-12-13T04:31:17.395Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/welcome/index.html</loc>
+    <lastmod>2025-09-22T20:12:04.698Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/exploratory-data-analysis/eda_nb.html</loc>
+    <lastmod>2025-09-23T03:07:17.636Z</lastmod>
+  </url>
+  <url>
+    <loc>https://azaidi06.github.io/eagle-swing/posts/auto_score/Untitled.html</loc>
+    <lastmod>2025-12-08T17:36:43.432Z</lastmod>
   </url>
   <url>
     <loc>https://azaidi06.github.io/eagle-swing/posts/decision_trees/index.html</loc>
