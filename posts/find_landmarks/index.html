@@ -332,7 +332,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
                           <div class="quarto-categories">
                 <div class="quarto-category">Data Engineering</div>
                 <div class="quarto-category">Automated Annotation</div>
-                <div class="quarto-category">Exploratory Data Analysis</div>
               </div>
                   </div>
   </div>
@@ -370,190 +369,471 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<div id="8ed225f4-f5d7-4f5a-a3c8-01a30a898ee1" class="cell" data-execution_count="7">
+<p>We’re going to try isolate three specific landmarks in the swing and use this as the basis to clip the swings and compare them appropriately. <br> 1. Start of backswing <br> 2. Top of backswing <br> 3. Contact Point <br> Since we’re using 2d keypoints as proxies to determine this information, we will have to settle with landing in a general region around this landmark, if we can keep it within 2-3 frames (~5% of the number of frames in a second) this should be good enough for comparison purposes</p>
+<div id="832d155a-a3d5-4935-8eba-bba8f28e938a" class="cell" data-execution_count="98">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>plt.style.use(<span class="st">'dark_background'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_top_idxs(swing_list):</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    x_lowest <span class="op">=</span> [get_x_lowest(swing_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(swing_list))]</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    y_lowest <span class="op">=</span> [get_y_lowest(swing_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(swing_list))]</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    xy_lowest <span class="op">=</span> [get_xy_sum_lowest(swing_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(swing_list))]</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    complex_backswing_top_frames <span class="op">=</span> [get_top_idx(swing_list[x].r_wrist, </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 y_axis_only<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>                thresh_value<span class="op">=</span><span class="fl">0.001</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(swing_list))]</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    all_idxs <span class="op">=</span> [x_lowest, y_lowest, xy_lowest,]<span class="co"># complex_backswing_top_frames]</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    avg_backswing_idxs <span class="op">=</span> <span class="bu">list</span>(np.array([np.array(x) <span class="cf">for</span> x <span class="kw">in</span> all_idxs]).mean(axis<span class="op">=</span><span class="dv">0</span>).<span class="bu">round</span>().astype(<span class="bu">int</span>))</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> avg_backswing_idxs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<section id="lets-find-the-top-of-the-backswing" class="level2">
-<h2 class="anchored" data-anchor-id="lets-find-the-top-of-the-backswing">Lets find the top of the backswing</h2>
-<div id="ad605ee8-7cce-40de-815b-1cee0117ec94" class="cell" data-execution_count="31">
+<div id="3b23c1fe-8652-4e07-99a0-3f4abee6a0b2" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># df = pd.read_csv('test_df.csv')</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>base_path <span class="op">=</span> <span class="st">'../../../data/full_videos/ymirza'</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#day_path = f"{base_path}/sep14"</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#cleaned_df_paths = [file for file in get_files(day_path, extensions='.csv') if file.name == 'clean_lbls.csv']</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>cleaned_df_paths <span class="op">=</span> [<span class="bu">file</span> <span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> get_files(base_path, extensions<span class="op">=</span><span class="st">'.csv'</span>) <span class="cf">if</span> <span class="bu">file</span>.name <span class="op">==</span> <span class="st">'clean_lbls.csv'</span>]</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df_holder <span class="op">=</span> []</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> df_path <span class="kw">in</span> cleaned_df_paths:</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    df_holder.append(pd.read_csv(df_path))</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>cleaned_df <span class="op">=</span> pd.concat(df_holder).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'swing_day'</span>] <span class="op">=</span> cleaned_df.pkl_path.<span class="bu">map</span>(<span class="kw">lambda</span> x: x.split(<span class="st">'/'</span>)[<span class="dv">0</span>])</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'pkl_path'</span>] <span class="op">=</span> cleaned_df.pkl_path.<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f'</span><span class="sc">{</span>base_path<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">'</span>)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>before_increment <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>after_increment <span class="op">=</span> <span class="dv">20</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'start_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">-</span> before_increment</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'end_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">+</span> after_increment</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>df5 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">5</span>)]</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">1</span>)]</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> pd.concat([df5.iloc[:<span class="dv">3</span>], df1.iloc[:<span class="dv">3</span>]]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>rand_idxs <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="bu">len</span>(cleaned_df), <span class="dv">6</span>)</span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> cleaned_df.iloc[rand_idxs]</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>SwExt_list <span class="op">=</span> []</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows():</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    SwExt_list.append(SwingExtractor(row))</span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>clip_names <span class="op">=</span> [SwExt_list[x].clip_name <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clip_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># sep14_df, sep14_swings, sep14_clip_names = get_cleaned_df(day_path='sep14', </span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#                                                           before_increment=10,</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#                                                           after_increment=20,</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">#                                                           return_random_df=False)</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># avg_top_backswing_idxs = get_top_idxs(sep14_swings)</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># sep14_df['top_backswing_idx'] = sep14_df.start_idx + avg_top_backswing_idxs</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co">#sep14_df.to_csv('sep14_df.csv', index=False)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># sep14_df.head(1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>['IMG_1092_swing_2_score_4', 'IMG_1273_swing_6_score_4', 'IMG_1183_swing_3_score_1', 'IMG_1023_swing_10_score_3', 'IMG_1023_swing_11_score_2', 'IMG_1091_swing_0_score_2']</code></pre>
 </div>
-</div>
-<div id="6df3e256-e10c-442c-aeb3-8ce0fc1645f2" class="cell" data-execution_count="32">
+<div id="74aa7224-bc80-4f94-9e20-6fe5ca8cd574" class="cell" data-execution_count="138">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> []</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>fps_list <span class="op">=</span> []</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows():</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    frames, fps <span class="op">=</span> get_frames(video_path,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                            start_idx<span class="op">=</span>row.start_idx,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                             num_frames<span class="op">=</span>row.end_idx <span class="op">-</span> row.start_idx,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>                             show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>                             resize_dim<span class="op">=</span>(<span class="dv">512</span>,<span class="dv">512</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                            )</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    frames_list.append(frames)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    fps_list.append(fps)</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>oct25_df, oct25_swings, oct25_clip_names <span class="op">=</span> get_cleaned_df(day_path<span class="op">=</span><span class="st">'oct25'</span>, </span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                                                          before_increment<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                                                          after_increment<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                                                          return_random_df<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>avg_top_backswing_idxs <span class="op">=</span> get_top_idxs(oct25_swings)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>oct25_df[<span class="st">'top_backswing_idx'</span>] <span class="op">=</span> oct25_df.start_idx <span class="op">+</span> avg_top_backswing_idxs</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>oct25_df.to_csv(<span class="st">'oct25_df.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>oct25_df.head(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="138">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">video_name</th>
+<th data-quarto-table-cell-role="th">swing_index</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">pkl_path</th>
+<th data-quarto-table-cell-role="th">clip_name</th>
+<th data-quarto-table-cell-role="th">first_higher_wrists_backswing_frame</th>
+<th data-quarto-table-cell-role="th">swing_day</th>
+<th data-quarto-table-cell-role="th">start_idx</th>
+<th data-quarto-table-cell-role="th">end_idx</th>
+<th data-quarto-table-cell-role="th">top_backswing_idx</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>IMG_1185</td>
+<td>0</td>
+<td>1</td>
+<td>../../../data/full_videos/ymirza/oct25/IMG_1185/keypoints/IMG_1185.pkl</td>
+<td>IMG_1185_swing_0_score_1</td>
+<td>1359</td>
+<td>oct25</td>
+<td>1349</td>
+<td>1379</td>
+<td>1370</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="979cf08c-6858-4999-9efd-02a2e17dd3d0" class="cell" data-execution_count="139">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>nov16_df, nov16_swings, nov16_clip_names <span class="op">=</span> get_cleaned_df(day_path<span class="op">=</span><span class="st">'nov16'</span>, </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>                                                          before_increment<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                                                          after_increment<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                                                          return_random_df<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>avg_top_backswing_idxs <span class="op">=</span> get_top_idxs(nov16_swings)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>nov16_df[<span class="st">'top_backswing_idx'</span>] <span class="op">=</span> nov16_df.start_idx <span class="op">+</span> avg_top_backswing_idxs</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>nov16_df.to_csv(<span class="st">'nov16_df.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>nov16_df.head(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="139">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">video_name</th>
+<th data-quarto-table-cell-role="th">swing_index</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">pkl_path</th>
+<th data-quarto-table-cell-role="th">clip_name</th>
+<th data-quarto-table-cell-role="th">first_higher_wrists_backswing_frame</th>
+<th data-quarto-table-cell-role="th">swing_day</th>
+<th data-quarto-table-cell-role="th">start_idx</th>
+<th data-quarto-table-cell-role="th">end_idx</th>
+<th data-quarto-table-cell-role="th">top_backswing_idx</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>IMG_1274</td>
+<td>0</td>
+<td>4</td>
+<td>../../../data/full_videos/ymirza/nov16/IMG_1274/keypoints/IMG_1274.pkl</td>
+<td>IMG_1274_swing_0_score_4</td>
+<td>1771</td>
+<td>nov16</td>
+<td>1761</td>
+<td>1791</td>
+<td>1784</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="710b7892-eab8-43dc-9b39-58203c5510e6" class="cell" data-execution_count="140">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>aug9_df, aug9_swings, aug9_clip_names <span class="op">=</span> get_cleaned_df(day_path<span class="op">=</span><span class="st">'aug9'</span>, </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                                                          before_increment<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                                          after_increment<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                                                          return_random_df<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>avg_top_backswing_idxs <span class="op">=</span> get_top_idxs(aug9_swings)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>aug9_df[<span class="st">'top_backswing_idx'</span>] <span class="op">=</span> aug9_df.start_idx <span class="op">+</span> avg_top_backswing_idxs</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>aug9_df.to_csv(<span class="st">'nov16_df.csv'</span>, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>aug9_df.head(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="140">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">clip_name</th>
+<th data-quarto-table-cell-role="th">video_name</th>
+<th data-quarto-table-cell-role="th">swing_index</th>
+<th data-quarto-table-cell-role="th">score</th>
+<th data-quarto-table-cell-role="th">pkl_path</th>
+<th data-quarto-table-cell-role="th">first_higher_wrists_backswing_frame</th>
+<th data-quarto-table-cell-role="th">swing_day</th>
+<th data-quarto-table-cell-role="th">start_idx</th>
+<th data-quarto-table-cell-role="th">end_idx</th>
+<th data-quarto-table-cell-role="th">top_backswing_idx</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>IMG_1023_swing_0_score_1</td>
+<td>IMG_1023</td>
+<td>0</td>
+<td>1</td>
+<td>../../../data/full_videos/ymirza/aug9/IMG_1023/keypoints/IMG_1023.pkl</td>
+<td>1540</td>
+<td>aug9</td>
+<td>1530</td>
+<td>1560</td>
+<td>1550</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="685b3c2e-daf3-4dbd-8267-b435b843852e" class="cell" data-execution_count="174">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_spec_frames(df, start<span class="op">=</span><span class="dv">90</span>, after<span class="op">=</span><span class="dv">30</span>):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'start_idx'</span>] <span class="op">=</span> df.top_backswing_idx <span class="op">-</span> start</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    df[<span class="st">'end_idx'</span>] <span class="op">=</span> df.top_backswing_idx <span class="op">+</span> after</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    random_idxs <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="bu">len</span>(df), <span class="dv">12</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    frames_list <span class="op">=</span> get_frames_from_df(df.iloc[random_idxs].reset_index(drop<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> frames_list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="74960433-e5c2-4de8-a8d1-ee618feca018" class="cell" data-execution_count="170">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>aug9_df.shape, sep14_df.shape, oct25_df.shape, nov16_df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="170">
+<pre><code>((54, 10), (46, 10), (33, 10), (42, 10))</code></pre>
+</div>
+</div>
+<div id="58c0769c-f844-4596-9200-dcd5807454c6" class="cell" data-execution_count="191">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>df_list <span class="op">=</span> [aug9_df, sep14_df, oct25_df, nov16_df]</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="bu">sum</span>([x.shape[<span class="dv">0</span>] <span class="cf">for</span> x <span class="kw">in</span> df_list])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="191">
+<pre><code>175</code></pre>
+</div>
+</div>
+<div id="740f2574-f992-4e90-87b8-2bcf50b83950" class="cell" data-execution_count="194">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> get_spec_frames(nov16_df, start<span class="op">=</span><span class="dv">75</span>, after<span class="op">=</span><span class="dv">30</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="1e09f525-1ea9-4494-8481-026455c98271" class="cell" data-execution_count="195">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list[<span class="dv">6</span>:])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"192d27e400f54c92bfaa7bb384a84b81","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"437a6b5516414c2498151f4f1a0b036f","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
-<div id="50f24d1a-0725-4692-bba2-67323bb2075b" class="cell" data-execution_count="36">
+<section id="lets-find-the-top-of-the-backswing" class="level2">
+<h2 class="anchored" data-anchor-id="lets-find-the-top-of-the-backswing">Lets find the top of the backswing</h2>
+<div id="0c31b9ba-38a8-4d99-97a3-6a75086f0803" class="cell" data-execution_count="109">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>complex_backswing_top_frames <span class="op">=</span> [get_top_idx(SwExt_list[x].kps.r_wrist, </span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>             y_axis_only<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>            thresh_value<span class="op">=</span><span class="fl">0.01</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>complex_backswing_top_frames</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_cleaned_df(base_path<span class="op">=</span><span class="va">None</span>,<span class="co">#folder that contains all csvs</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>                   day_path<span class="op">=</span><span class="va">None</span>, <span class="co">#i.e. sep14</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>                   before_increment<span class="op">=</span><span class="dv">30</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>                   after_increment<span class="op">=</span><span class="dv">30</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>                   return_low_high_df<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                   return_random_df<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                   return_kps<span class="op">=</span><span class="va">True</span>):</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> base_path <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>        base_path <span class="op">=</span> <span class="st">'../../../data/full_videos/ymirza'</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> day_path:</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>        full_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>base_path<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>day_path<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>: full_path <span class="op">=</span> base_path</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    cleaned_df_paths <span class="op">=</span> [<span class="bu">file</span> <span class="cf">for</span> <span class="bu">file</span> <span class="kw">in</span> get_files(full_path, </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>                               extensions<span class="op">=</span><span class="st">'.csv'</span>) <span class="cf">if</span> <span class="bu">file</span>.name <span class="op">==</span> <span class="st">'clean_lbls.csv'</span>]    </span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    df_holder <span class="op">=</span> [pd.read_csv(df_path) <span class="cf">for</span> df_path <span class="kw">in</span> cleaned_df_paths]</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    cleaned_df <span class="op">=</span> pd.concat(df_holder).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>    cleaned_df[<span class="st">'swing_day'</span>] <span class="op">=</span> cleaned_df.pkl_path.<span class="bu">map</span>(<span class="kw">lambda</span> x: x.split(<span class="st">'/'</span>)[<span class="dv">0</span>])</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    cleaned_df[<span class="st">'pkl_path'</span>] <span class="op">=</span> cleaned_df.pkl_path.<span class="bu">map</span>(<span class="kw">lambda</span> x: <span class="ss">f'</span><span class="sc">{</span>base_path<span class="sc">}</span><span class="ss">/</span><span class="sc">{</span>x<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    cleaned_df[<span class="st">'start_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">-</span> before_increment</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>    cleaned_df[<span class="st">'end_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">+</span> after_increment</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> return_low_high_df:</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>        df5 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">5</span>)]</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>        df1 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">1</span>)]</span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>        test_df <span class="op">=</span> pd.concat([df5.iloc[:<span class="dv">3</span>], df1.iloc[:<span class="dv">3</span>]]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-25"><a href="#cb13-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">elif</span> return_random_df:</span>
+<span id="cb13-26"><a href="#cb13-26" aria-hidden="true" tabindex="-1"></a>        rand_idxs <span class="op">=</span> np.random.randint(<span class="dv">0</span>, <span class="bu">len</span>(cleaned_df), <span class="dv">6</span>)</span>
+<span id="cb13-27"><a href="#cb13-27" aria-hidden="true" tabindex="-1"></a>        test_df <span class="op">=</span> cleaned_df.iloc[rand_idxs]</span>
+<span id="cb13-28"><a href="#cb13-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb13-29"><a href="#cb13-29" aria-hidden="true" tabindex="-1"></a>        test_df <span class="op">=</span> cleaned_df</span>
+<span id="cb13-30"><a href="#cb13-30" aria-hidden="true" tabindex="-1"></a>    test_df <span class="op">=</span> test_df.reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-31"><a href="#cb13-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> return_kps:</span>
+<span id="cb13-32"><a href="#cb13-32" aria-hidden="true" tabindex="-1"></a>        SwExt_list <span class="op">=</span> [SwingExtractor(row).kps <span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows()]</span>
+<span id="cb13-33"><a href="#cb13-33" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb13-34"><a href="#cb13-34" aria-hidden="true" tabindex="-1"></a>        SwExt_list <span class="op">=</span> [SwingExtractor(row) <span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows()]</span>
+<span id="cb13-35"><a href="#cb13-35" aria-hidden="true" tabindex="-1"></a>    clip_names <span class="op">=</span> [SwExt_list[x].clip_name <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
+<span id="cb13-36"><a href="#cb13-36" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> test_df, SwExt_list, clip_names</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="36">
-<pre><code>[28, 34, 34, 29, 29, 33]</code></pre>
 </div>
-</div>
-<div id="bdb80b5c-ab3b-4104-8bf4-c67ce03ba354" class="cell" data-execution_count="37">
+<div id="5eba434c-8f16-4b46-9520-cb6e025f5889" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>backswing_top_idxs <span class="op">=</span> [np.argmin(SwExt_list[x].kps.r_wrist[:, :<span class="dv">2</span>].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>backswing_top_idxs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_frames_from_df(df, resize_dim<span class="op">=</span>(<span class="dv">512</span>,<span class="dv">512</span>)):</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    frames_list <span class="op">=</span> []</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> idx, row <span class="kw">in</span> df.iterrows():</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>        video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>        frames, fps <span class="op">=</span> get_frames(video_path,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                start_idx<span class="op">=</span>row.start_idx,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                                 num_frames<span class="op">=</span>row.end_idx <span class="op">-</span> row.start_idx,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                                 show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>                                 resize_dim<span class="op">=</span>resize_dim</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>                                )</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>        frames_list.append(frames)</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> frames_list</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="37">
-<pre><code>[28, 34, 34, 29, 30, 33]</code></pre>
 </div>
-</div>
-<div id="ba7766cd-ace0-496b-b0bc-1889818f4770" class="cell" data-execution_count="38">
+<div id="6df3e256-e10c-442c-aeb3-8ce0fc1645f2" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>highlight_frames <span class="op">=</span> [np.argmax(SwExt_list[x].kps.r_wrist[:, :<span class="dv">2</span>].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>plot_feature_across_instances(SwExt_list,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>                              feature_name<span class="op">=</span><span class="st">'r_wrist'</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                              highlight_frames<span class="op">=</span>backswing_top_idxs,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>                             highlight_frames_orange<span class="op">=</span>complex_backswing_top_frames)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>top_backswing_df, top_backswing_SwExt_list, top_backswing_clip_names <span class="op">=</span> get_cleaned_df(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    before_increment<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    after_increment<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>top_backswing_frames_list <span class="op">=</span> get_frames_from_df(top_backswing_df)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">set</span>([x.shape <span class="cf">for</span> x <span class="kw">in</span> top_backswing_frames_list]))</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>view_videos_grid(top_backswing_frames_list[:<span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>{(30, 512, 512, 3)}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"cb5a8b73fb5242299e16dd3775a6d1f0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div id="25dc72d9-66e9-48eb-a607-f37f909db461" class="cell" data-execution_count="7">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_lowest(np_array): <span class="cf">return</span> np.argmin(np_array)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_highest(np_array): <span class="cf">return</span> np.argmax(np_array)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_x_lowest(np_array): <span class="cf">return</span> get_lowest(np_array[:, <span class="dv">0</span>])</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_y_lowest(np_array): <span class="cf">return</span> get_lowest(np_array[:, <span class="dv">1</span>])</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_x_highest(np_array): <span class="cf">return</span> get_highest(np_array[:, <span class="dv">0</span>])</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_y_highest(np_array): <span class="cf">return</span> get_highest(np_array[:, <span class="dv">1</span>])</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_xy_sum_highest(np_array): <span class="cf">return</span> get_highest(np_array[:, :<span class="dv">2</span>].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_xy_sum_lowest(np_array): <span class="cf">return</span> get_lowest(np_array[:, :<span class="dv">2</span>].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>x_lowest <span class="op">=</span> [get_x_lowest(top_backswing_SwExt_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(top_backswing_SwExt_list))]</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>y_lowest <span class="op">=</span> [get_y_lowest(top_backswing_SwExt_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(top_backswing_SwExt_list))]</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>xy_lowest <span class="op">=</span> [get_xy_sum_lowest(top_backswing_SwExt_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(top_backswing_SwExt_list))]</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>complex_backswing_top_frames <span class="op">=</span> [get_top_idx(top_backswing_SwExt_list[x].r_wrist, </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>             y_axis_only<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>            thresh_value<span class="op">=</span><span class="fl">0.001</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(top_backswing_SwExt_list))]</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>all_idxs <span class="op">=</span> [x_lowest, y_lowest, xy_lowest,]<span class="co"># complex_backswing_top_frames]</span></span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>avg_backswing_idxs <span class="op">=</span> <span class="bu">list</span>(np.array([np.array(x) <span class="cf">for</span> x <span class="kw">in</span> all_idxs]).mean(axis<span class="op">=</span><span class="dv">0</span>).<span class="bu">round</span>().astype(<span class="bu">int</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="50f24d1a-0725-4692-bba2-67323bb2075b" class="cell" data-execution_count="8">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(x_lowest)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(y_lowest)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(xy_lowest)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(complex_backswing_top_frames)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(avg_backswing_idxs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[25, 23, 21, 21, 20, 24]
+[22, 20, 18, 20, 22, 21]
+[22, 20, 20, 20, 22, 22]
+[22, 21, 19, 21, 21, 22]
+[23, 21, 20, 20, 21, 22]</code></pre>
+</div>
+</div>
+<div id="ba7766cd-ace0-496b-b0bc-1889818f4770" class="cell" data-execution_count="9">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plot_feature_across_instances(top_backswing_SwExt_list,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                              feature_name<span class="op">=</span><span class="st">'r_wrist'</span>,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_red<span class="op">=</span>avg_backswing_idxs,</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_orange<span class="op">=</span>y_lowest,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_magenta<span class="op">=</span>xy_lowest,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_eblue<span class="op">=</span>x_lowest,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                              <span class="co">#highlight_frames_eblue=complex_backswing_top_frames,</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>                             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-9-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/cell-18-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
+</div>
+</div>
+<div id="e0084aa3-320d-41f9-8a43-e42075623c76" class="cell" data-execution_count="56">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>top_backswing_df[<span class="st">'top_backswing_idx'</span>] <span class="op">=</span> top_backswing_df.start_idx <span class="op">+</span> np.array(avg_backswing_idxs) <span class="op">-</span> <span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="21ec8c0c-5c35-42ee-98bc-147928c3256b" class="cell" data-execution_count="72">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> []</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> top_backswing_df.iterrows():</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>    frames, fps <span class="op">=</span> get_frames(video_path,</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                            start_idx<span class="op">=</span>row.top_backswing_idx <span class="op">-</span> <span class="dv">66</span>,</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                             num_frames<span class="op">=</span><span class="dv">96</span>,</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                             show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                             resize_dim<span class="op">=</span>(<span class="dv">512</span>,<span class="dv">512</span>)</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>                            )</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    frames_list.append(frames)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div id="afe9334f-008a-4449-a1de-efef76af5632" class="cell" data-execution_count="74">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list[<span class="dv">3</span>:])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"30b9928c233747e79aab8657459fecf4","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
 </div>
 </div>
 </section>
 <section id="lets-find-the-contact-frame" class="level2">
 <h2 class="anchored" data-anchor-id="lets-find-the-contact-frame">Lets find the contact frame</h2>
-<div id="03d718d0-2e3b-4dbb-95d9-96c0599af246" class="cell" data-execution_count="41">
+<div id="89622756-73e0-4fb6-8977-f31deb26bdaf" class="cell" data-execution_count="197">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>before_increment <span class="op">=</span> <span class="op">-</span><span class="dv">20</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>after_increment <span class="op">=</span> <span class="dv">40</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'start_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">-</span> before_increment</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'end_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">+</span> after_increment</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>df5 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">5</span>)]</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">1</span>)]</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> pd.concat([df5.iloc[:<span class="dv">3</span>], df1.iloc[:<span class="dv">3</span>]]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> cleaned_df.iloc[rand_idxs]</span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>SwExt_list <span class="op">=</span> []</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows():</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    SwExt_list.append(SwingExtractor(row))</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>clip_names <span class="op">=</span> [SwExt_list[x].clip_name <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clip_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>contact_df, contact_SwExt_list, contact_clip_names <span class="op">=</span> get_cleaned_df(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    before_increment<span class="op">=-</span><span class="dv">20</span>,</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    after_increment<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>contact_frames_list <span class="op">=</span> get_frames_from_df(contact_df)</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">set</span>([x.shape <span class="cf">for</span> x <span class="kw">in</span> contact_frames_list]))</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>view_videos_grid(contact_frames_list[:<span class="dv">3</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>['IMG_1092_swing_2_score_4', 'IMG_1273_swing_6_score_4', 'IMG_1183_swing_3_score_1', 'IMG_1023_swing_10_score_3', 'IMG_1023_swing_11_score_2', 'IMG_1091_swing_0_score_2']</code></pre>
+<pre><code>{(20, 512, 512, 3)}</code></pre>
 </div>
-</div>
-<div id="44e116f8-464d-4c4e-95b5-c82ec45cd6a7" class="cell" data-execution_count="42">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> []</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows():</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    frames, fps <span class="op">=</span> get_frames(video_path,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>                            start_idx<span class="op">=</span>row.start_idx,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>                             num_frames<span class="op">=</span>row.end_idx <span class="op">-</span> row.start_idx,</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>                             show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>                             resize_dim<span class="op">=</span>(<span class="dv">512</span>,<span class="dv">512</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>                            )</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    frames_list.append(frames)</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
 <div class="cell-output cell-output-display">
 <script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"6106938503584a1abe024194b7cdc2ce","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+{"model_id":"b9e7a51e3b324f3195578119015bd8e2","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
 </script>
 </div>
 </div>
-<div id="eab77f82-006c-4921-8c5b-2da9ad33dfd3" class="cell" data-execution_count="43">
+<div id="9ce2ebe8-58a4-4776-ad75-3d3b27c48ab0" class="cell" data-execution_count="198">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>[np.argmax(SwExt_list[x].kps.r_wrist[:, :<span class="dv">2</span>].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>x_highest <span class="op">=</span> [get_x_highest(contact_SwExt_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(contact_SwExt_list))]</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>y_highest <span class="op">=</span> [get_y_highest(contact_SwExt_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(contact_SwExt_list))]</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>xy_highest <span class="op">=</span> [get_xy_sum_highest(contact_SwExt_list[x].r_wrist) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(contact_SwExt_list))]</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="co">#complex_contact_bottom_frames = [get_top_idx(contact_SwExt_list[x].r_wrist, </span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="co">#                                 y_axis_only=True,</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="co">#                                 thresh_value=0.001) for x in range(len(contact_SwExt_list))]</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>contact_idxs <span class="op">=</span> [x_highest, y_highest, xy_highest,]<span class="co"># complex_contact_bottom_frames]</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>avg_contact_idxs <span class="op">=</span> <span class="bu">list</span>(np.array([np.array(x) <span class="cf">for</span> x <span class="kw">in</span> contact_idxs]).mean(axis<span class="op">=</span><span class="dv">0</span>).<span class="bu">round</span>().astype(<span class="bu">int</span>))</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(avg_contact_idxs)</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(y_highest)</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(xy_highest)</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(x_highest)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="43">
-<pre><code>[6, 9, 10, 5, 7, 10]</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code>[7, 7, 10, 6, 7, 9]
+[8, 8, 10, 6, 7, 10]
+[7, 7, 10, 6, 7, 9]
+[7, 6, 9, 5, 6, 9]</code></pre>
 </div>
 </div>
-<div id="c9563d99-466c-47db-9956-c2e74b15dc1e" class="cell" data-execution_count="44">
+<div id="07616bbe-7dfd-4518-9784-5a651cb1f2a5" class="cell" data-execution_count="200">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>[get_top_idx(SwExt_list[x].kps.r_wrist, </span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>             y_axis_only<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>            thresh_value<span class="op">=</span><span class="fl">0.01</span>) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="44">
-<pre><code>[8, None, None, 17, 10, 12]</code></pre>
-</div>
-</div>
-<div id="07616bbe-7dfd-4518-9784-5a651cb1f2a5" class="cell" data-execution_count="45">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>contact_idxs <span class="op">=</span> [<span class="dv">8</span>,<span class="dv">11</span>,<span class="dv">11</span>,<span class="dv">7</span>,<span class="dv">9</span>,<span class="dv">11</span>]</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>highlight_frames <span class="op">=</span> [np.argmax(SwExt_list[x].kps.r_wrist[:, :<span class="dv">2</span>].<span class="bu">sum</span>(axis<span class="op">=</span><span class="dv">1</span>)) <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>plot_feature_across_instances(SwExt_list,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                              feature_name<span class="op">=</span><span class="st">'r_wrist'</span>,</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>                              highlight_frames<span class="op">=</span>highlight_frames,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>                             highlight_frames_orange<span class="op">=</span>contact_idxs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>plot_feature_across_instances(contact_SwExt_list[:<span class="dv">3</span>],</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>                              feature_name<span class="op">=</span><span class="st">'r_wrist'</span>,</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_red<span class="op">=</span>avg_contact_idxs,</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_orange<span class="op">=</span>y_highest,</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>                              highli ght_frames_magenta<span class="op">=</span>xy_highest,</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>                              <span class="co">#highlight_frames_eblue=complex_contact_bottom_frames,</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_eblue<span class="op">=</span>x_highest,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>                             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-14-output-1.png" class="img-fluid figure-img"></p>
+<p><img src="index_files/figure-html/cell-24-output-1.png" class="img-fluid figure-img"></p>
 </figure>
 </div>
 </div>
@@ -561,124 +841,152 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="now-lets-look-at-just-top-of-backswing-to-contact" class="level2">
 <h2 class="anchored" data-anchor-id="now-lets-look-at-just-top-of-backswing-to-contact">Now lets look at just top of backswing to contact</h2>
-<div id="19242b73-f4fd-4a2b-992d-588d7a37aaf0" class="cell" data-execution_count="18">
+<div id="19242b73-f4fd-4a2b-992d-588d7a37aaf0" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>complex_backswing_top_frames, highlight_frames</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>complex_backswing_top_frames, highlight_frames</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="18">
-<pre><code>([34, None, 30, 31, 35, 31], [0, 1, 5, 0, 0, 8])</code></pre>
 </div>
-</div>
-<div id="4a0ec3da-5d1c-4027-91b0-e5f5c1b3e889" class="cell" data-execution_count="46">
+<div id="4a0ec3da-5d1c-4027-91b0-e5f5c1b3e889" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 20 frames before the first wrist over shoulder</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>top_frame <span class="op">=</span> np.array(backswing_top_idxs) <span class="op">-</span> <span class="dv">20</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">#top_frame = np.array(backswing_top_idxs) - 20</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#bottom_frame = np.array(contact_idxs) + 20</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>bottom_frame <span class="op">=</span> np.array(highlight_frames) <span class="op">+</span> <span class="dv">20</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>bottom_frame <span class="op">-</span> top_frame</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 20 frames before the first wrist over shoulder</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>top_frame <span class="op">=</span> np.array(backswing_top_idxs) <span class="op">-</span> <span class="dv">20</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="co">#top_frame = np.array(backswing_top_idxs) - 20</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="co">#bottom_frame = np.array(contact_idxs) + 20</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>bottom_frame <span class="op">=</span> np.array(highlight_frames) <span class="op">+</span> <span class="dv">20</span></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>bottom_frame <span class="op">-</span> top_frame</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="46">
-<pre><code>array([18, 15, 16, 16, 17, 17])</code></pre>
 </div>
-</div>
-<div id="a430e992-e226-4f62-b65b-0f6917e7b2b5" class="cell" data-execution_count="47">
+<div id="a430e992-e226-4f62-b65b-0f6917e7b2b5" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>top_frame, bottom_frame</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>top_frame, bottom_frame</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="47">
-<pre><code>(array([ 8, 14, 14,  9, 10, 13]), array([26, 29, 30, 25, 27, 30]))</code></pre>
 </div>
-</div>
-<div id="efb7d675-906a-40b3-8e1e-5364cc2ca1fe" class="cell" data-execution_count="72">
+<div id="efb7d675-906a-40b3-8e1e-5364cc2ca1fe" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> []</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.reset_index(drop<span class="op">=</span><span class="va">True</span>).iterrows():</span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>    video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>    frames, fps <span class="op">=</span> get_frames(video_path,</span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>                            start_idx<span class="op">=</span>row.start_idx <span class="op">+</span> top_frame[idx] <span class="op">-</span> <span class="dv">20</span> ,</span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>                             num_frames<span class="op">=</span>bottom_frame[idx] <span class="op">-</span> top_frame[idx] <span class="op">+</span> <span class="dv">3</span>,</span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                             show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                            )</span>
-<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    frames_list.append(frames)</span>
-<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> []</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.reset_index(drop<span class="op">=</span><span class="va">True</span>).iterrows():</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>    video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    frames, fps <span class="op">=</span> get_frames(video_path,</span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>                            start_idx<span class="op">=</span>row.start_idx <span class="op">+</span> top_frame[idx] <span class="op">-</span> <span class="dv">20</span> ,</span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>                             num_frames<span class="op">=</span>bottom_frame[idx] <span class="op">-</span> top_frame[idx] <span class="op">+</span> <span class="dv">3</span>,</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>                             show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>                            )</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    frames_list.append(frames)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display">
-<script type="application/vnd.jupyter.widget-view+json">
-{"model_id":"841bb6c318a8458591be607fd7e14568","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
-</script>
-</div>
 </div>
 </section>
 <section id="lets-find-the-start-of-the-swings-frame" class="level2">
 <h2 class="anchored" data-anchor-id="lets-find-the-start-of-the-swings-frame">Lets find the start of the swings frame</h2>
-<div id="1f80a711-1a85-4762-bb2d-f9932772f065" class="cell">
+<div id="1f80a711-1a85-4762-bb2d-f9932772f065" class="cell" data-execution_count="14">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>before_increment <span class="op">=</span> <span class="dv">90</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>after_increment <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'start_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">-</span> before_increment</span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>cleaned_df[<span class="st">'end_idx'</span>] <span class="op">=</span> cleaned_df[<span class="st">'first_higher_wrists_backswing_frame'</span>] <span class="op">+</span> after_increment</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>df5 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">5</span>)]</span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>df1 <span class="op">=</span> cleaned_df[cleaned_df.score.<span class="bu">map</span>(<span class="kw">lambda</span> x: x <span class="op">==</span> <span class="dv">1</span>)]</span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>test_df <span class="op">=</span> pd.concat([df5.iloc[:<span class="dv">3</span>], df1.iloc[:<span class="dv">3</span>]]).reset_index(drop<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>SwExt_list <span class="op">=</span> []</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows():</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    SwExt_list.append(SwingExtractor(row))</span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>clip_names <span class="op">=</span> [SwExt_list[x].clip_name <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(SwExt_list))]</span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>frames_list <span class="op">=</span> []</span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> idx, row <span class="kw">in</span> test_df.iterrows():</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>    video_path <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span>row<span class="sc">.</span>pkl_path[:<span class="op">-</span><span class="dv">3</span>]<span class="sc">}</span><span class="ss">mp4"</span></span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    frames, fps <span class="op">=</span> get_frames(video_path,</span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>                            start_idx<span class="op">=</span>row.start_idx,</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>                             num_frames<span class="op">=</span>row.end_idx <span class="op">-</span> row.start_idx,</span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>                             show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>                            )</span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    frames_list.append(frames)</span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>view_videos_grid(frames_list)</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(clip_names)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>start_df, start_SwExt_list, contact_clip_names <span class="op">=</span> get_cleaned_df(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    before_increment<span class="op">=</span><span class="dv">90</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    after_increment<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    return_kps<span class="op">=</span><span class="va">False</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>start_frames_list <span class="op">=</span> get_frames_from_df(start_df)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="bu">set</span>([x.shape <span class="cf">for</span> x <span class="kw">in</span> start_frames_list]))</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>view_videos_grid(start_frames_list)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>{(90, 512, 512, 3)}</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"78554987622e4f92a5c0f4665e461052","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div id="d3c51538-b1a0-480a-bbc3-a8b8b17f9b35" class="cell" data-execution_count="30">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>start_idxs <span class="op">=</span> [<span class="dv">30</span>, <span class="dv">18</span>, <span class="dv">24</span>, <span class="dv">13</span>, <span class="dv">25</span>, <span class="dv">25</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="20e6e3ac-e4b9-406e-b263-cecad6fe4e15" class="cell">
+<div id="f75d8bf2-6318-4e09-a3dc-750c600a1402" class="cell" data-execution_count="44">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>start_frame_idxs <span class="op">=</span> [<span class="dv">15</span>, <span class="dv">16</span>, <span class="dv">20</span>, <span class="dv">5</span>, <span class="dv">15</span>, <span class="dv">14</span>] </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>right_angle_list <span class="op">=</span> [start_SwExt_list[x].right_arm_angle <span class="cf">for</span> x <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(start_SwExt_list))]</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>plot_grid_variable_markers(right_angle_list, start_idxs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="index_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="50d08892-2c2b-4ace-976e-15768d406919" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;jupyter&quot;,&quot;value&quot;:{&quot;source_hidden&quot;:true}}" data-execution_count="27">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_grid_variable_markers(data_list, marker_indices):</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="co">    Plots a grid of lines where each plot highlights a specific, unique x-index.</span></span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="co">    </span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="co">    Args:</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="co">        data_list (list): List of arrays for y-values.</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="co">        marker_indices (list): List of x-indices, one for each plot. </span></span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="co">                               e.g., [12, 15, 10, ...]</span></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="co">    """</span></span>
+<span id="cb37-10"><a href="#cb37-10" aria-hidden="true" tabindex="-1"></a>    n_plots <span class="op">=</span> <span class="bu">len</span>(data_list)</span>
+<span id="cb37-11"><a href="#cb37-11" aria-hidden="true" tabindex="-1"></a>    cols <span class="op">=</span> <span class="dv">3</span></span>
+<span id="cb37-12"><a href="#cb37-12" aria-hidden="true" tabindex="-1"></a>    rows <span class="op">=</span> math.ceil(n_plots <span class="op">/</span> cols)</span>
+<span id="cb37-13"><a href="#cb37-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-14"><a href="#cb37-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create figure with constrained layout</span></span>
+<span id="cb37-15"><a href="#cb37-15" aria-hidden="true" tabindex="-1"></a>    fig, axes <span class="op">=</span> plt.subplots(rows, cols, figsize<span class="op">=</span>(<span class="dv">15</span>, <span class="fl">3.5</span> <span class="op">*</span> rows), constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb37-16"><a href="#cb37-16" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb37-17"><a href="#cb37-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Flatten axes for single-loop iteration</span></span>
+<span id="cb37-18"><a href="#cb37-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> n_plots <span class="op">&gt;</span> <span class="dv">1</span>:</span>
+<span id="cb37-19"><a href="#cb37-19" aria-hidden="true" tabindex="-1"></a>        axes <span class="op">=</span> axes.flatten()</span>
+<span id="cb37-20"><a href="#cb37-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb37-21"><a href="#cb37-21" aria-hidden="true" tabindex="-1"></a>        axes <span class="op">=</span> [axes]</span>
+<span id="cb37-22"><a href="#cb37-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, ax <span class="kw">in</span> <span class="bu">enumerate</span>(axes):</span>
+<span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">&lt;</span> n_plots:</span>
+<span id="cb37-25"><a href="#cb37-25" aria-hidden="true" tabindex="-1"></a>            <span class="co"># 1. Get data</span></span>
+<span id="cb37-26"><a href="#cb37-26" aria-hidden="true" tabindex="-1"></a>            y_data <span class="op">=</span> data_list[i]</span>
+<span id="cb37-27"><a href="#cb37-27" aria-hidden="true" tabindex="-1"></a>            x_data <span class="op">=</span> np.arange(<span class="bu">len</span>(y_data))</span>
+<span id="cb37-28"><a href="#cb37-28" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb37-29"><a href="#cb37-29" aria-hidden="true" tabindex="-1"></a>            <span class="co"># 2. Get the specific marker for THIS plot</span></span>
+<span id="cb37-30"><a href="#cb37-30" aria-hidden="true" tabindex="-1"></a>            <span class="co"># (Check bounds to ensure we have a marker for this plot index)</span></span>
+<span id="cb37-31"><a href="#cb37-31" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> i <span class="op">&lt;</span> <span class="bu">len</span>(marker_indices):</span>
+<span id="cb37-32"><a href="#cb37-32" aria-hidden="true" tabindex="-1"></a>                marker_idx <span class="op">=</span> marker_indices[i]</span>
+<span id="cb37-33"><a href="#cb37-33" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb37-34"><a href="#cb37-34" aria-hidden="true" tabindex="-1"></a>                marker_idx <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb37-35"><a href="#cb37-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-36"><a href="#cb37-36" aria-hidden="true" tabindex="-1"></a>            <span class="co"># 3. Plot Line</span></span>
+<span id="cb37-37"><a href="#cb37-37" aria-hidden="true" tabindex="-1"></a>            ax.plot(x_data, y_data, linewidth<span class="op">=</span><span class="dv">2</span>, label<span class="op">=</span><span class="ss">f'Series </span><span class="sc">{</span>i<span class="sc">}</span><span class="ss">'</span>)</span>
+<span id="cb37-38"><a href="#cb37-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-39"><a href="#cb37-39" aria-hidden="true" tabindex="-1"></a>            <span class="co"># 4. Highlight the variable marker</span></span>
+<span id="cb37-40"><a href="#cb37-40" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> marker_idx <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span> <span class="kw">and</span> <span class="dv">0</span> <span class="op">&lt;=</span> marker_idx <span class="op">&lt;</span> <span class="bu">len</span>(y_data):</span>
+<span id="cb37-41"><a href="#cb37-41" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Vertical line</span></span>
+<span id="cb37-42"><a href="#cb37-42" aria-hidden="true" tabindex="-1"></a>                ax.axvline(x<span class="op">=</span>marker_idx, color<span class="op">=</span><span class="st">'red'</span>, linestyle<span class="op">=</span><span class="st">'--'</span>, alpha<span class="op">=</span><span class="fl">0.6</span>)</span>
+<span id="cb37-43"><a href="#cb37-43" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Point marker</span></span>
+<span id="cb37-44"><a href="#cb37-44" aria-hidden="true" tabindex="-1"></a>                ax.plot(marker_idx, y_data[marker_idx], <span class="st">'ro'</span>, markersize<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb37-45"><a href="#cb37-45" aria-hidden="true" tabindex="-1"></a>                <span class="co"># Optional: Label the frame number</span></span>
+<span id="cb37-46"><a href="#cb37-46" aria-hidden="true" tabindex="-1"></a>                ax.text(marker_idx, y_data[marker_idx], <span class="ss">f' x=</span><span class="sc">{</span>marker_idx<span class="sc">}</span><span class="ss">'</span>, </span>
+<span id="cb37-47"><a href="#cb37-47" aria-hidden="true" tabindex="-1"></a>                        verticalalignment<span class="op">=</span><span class="st">'bottom'</span>, fontsize<span class="op">=</span><span class="dv">9</span>)</span>
+<span id="cb37-48"><a href="#cb37-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-49"><a href="#cb37-49" aria-hidden="true" tabindex="-1"></a>            ax.set_title(<span class="ss">f"Plot </span><span class="sc">{</span>i<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb37-50"><a href="#cb37-50" aria-hidden="true" tabindex="-1"></a>            ax.grid(<span class="va">True</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb37-51"><a href="#cb37-51" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb37-52"><a href="#cb37-52" aria-hidden="true" tabindex="-1"></a>            <span class="co"># Hide unused subplots</span></span>
+<span id="cb37-53"><a href="#cb37-53" aria-hidden="true" tabindex="-1"></a>            ax.axis(<span class="st">'off'</span>)</span>
+<span id="cb37-54"><a href="#cb37-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-55"><a href="#cb37-55" aria-hidden="true" tabindex="-1"></a>    plt.show()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<div id="50d08892-2c2b-4ace-976e-15768d406919" class="cell">
+<div id="e138d9ab-5e65-43c6-869f-f54586209527" class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">#highlight_frames = [np.argmax(SwExt_list[x].kps.r_wrist[:, :2].sum(axis=1)) for x in range(len(SwExt_list))]</span></span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>plot_feature_across_instances(SwExt_list,</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                              feature_name<span class="op">=</span><span class="st">'r_wrist'</span>,</span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                              highlight_frames<span class="op">=</span>start_frame_idxs,<span class="co">#[10]*6,</span></span>
-<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                              highlight_frames_orange<span class="op">=</span>[<span class="dv">80</span>]<span class="op">*</span><span class="dv">6</span>,</span>
-<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                             <span class="co"># highlight_frames=highlight_frames,</span></span>
-<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>                             <span class="co">#highlight_frames_orange=contact_idxs</span></span>
-<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>                              <span class="co">#smooth=False,</span></span>
-<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>                              <span class="co">#smooth_window=11</span></span>
-<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>                             )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="291c5f8c-8ad3-46db-9a01-6b7f2fd788aa" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(SwExt_list[<span class="dv">0</span>].clip_name)</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>plot_feature_trajectories(SwExt_list[<span class="dv">0</span>],</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>                         highlight_frame<span class="op">=</span><span class="dv">15</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<div id="08f7bf7e-fbc9-4ba2-b803-2abf2716bbdf" class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(SwExt_list[<span class="dv">1</span>].clip_name)</span>
-<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>plot_feature_trajectories(SwExt_list[<span class="dv">1</span>],</span>
-<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>                         highlight_frame<span class="op">=</span><span class="dv">7</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>plot_feature_trajectories(</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 
