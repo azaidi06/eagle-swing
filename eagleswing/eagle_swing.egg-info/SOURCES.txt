@@ -1,0 +1,8 @@
+pyproject.toml
+eagle_swing/__init__.py
+eagle_swing/data_class.py
+eagle_swing.egg-info/PKG-INFO
+eagle_swing.egg-info/SOURCES.txt
+eagle_swing.egg-info/dependency_links.txt
+eagle_swing.egg-info/requires.txt
+eagle_swing.egg-info/top_level.txt
