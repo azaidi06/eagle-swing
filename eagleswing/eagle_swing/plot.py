@@ -11,9 +11,10 @@ import math
 def plot_attributes(instances, attr_list, 
                     instance_labels=None,
                     scatter=False,
-                    smooth=True,           # <--- New Toggle
-                    window_len=7,          # <--- Smoothing intensity (must be odd)
-                    poly_order=2):         # <--- Polynomial order (2 or 3 is best)
+                    #smooth=True,           # <--- New Toggle
+                    #window_len=7,          # <--- Smoothing intensity (must be odd)
+                    #poly_order=2
+                    function=None):   
     """
     Plots attributes with distinct hues, connected scatter points, 
     and INVERTED Y-AXIS (video coordinate style).
@@ -59,24 +60,29 @@ def plot_attributes(instances, attr_list,
                 if hasattr(instance, attr_name):
                     data = getattr(instance, attr_name)
                     
-                    # --- SMOOTHING LOGIC ---
-                    if smooth and len(data) > window_len:
-                        # axis=0 ensures we smooth 'over time' (rows) for both X and Y columns
-                        try:
-                            data = savgol_filter(data, window_len, poly_order, axis=0) 
-                        except Exception as e:
-                            print(f"Skipping smoothing for {attr_name}: {e}")
+                    # # --- SMOOTHING LOGIC ---
+                    # if smooth and len(data) > window_len:
+                    #     # axis=0 ensures we smooth 'over time' (rows) for both X and Y columns
+                    #     try:
+                    #         data = savgol_filter(data, window_len, poly_order, axis=0) 
+                    #     except Exception as e:
+                    #         print(f"Skipping smoothing for {attr_name}: {e}")
                     
                     lbl = instance_labels[j] if i == 0 else "_nolegend_"
                     c = instance_colors[j]
 
                     if scatter:
+                        if function:
+                            print(function)
+                            data = function(data)
                         # Assuming data is (N, 2)
                         ax.plot(data[:, 0], data[:, 1], 
                                 color=c, label=lbl,
                                 marker='o', linestyle='-', 
                                 markersize=4, alpha=0.7)
                     else:
+                        if function:
+                            data = function(data)
                         # Assuming data is (N,) or (N, 1)
                         ax.plot(data, color=c, label=lbl)
                 else:

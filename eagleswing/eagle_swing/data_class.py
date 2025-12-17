@@ -54,7 +54,6 @@ class SwingMetaData:
                 return swing_path_split_names[idx + 1].split('.')[0]
     
     
-
 class SwingKeypointData(SwingMetaData):
     def __init__(self, pkl_path, **kwargs):
         super().__init__(pkl_path=pkl_path, **kwargs)
@@ -98,7 +97,6 @@ class SwingKeypointData(SwingMetaData):
         return len(self.key_points)
 
 
-
 class KpExtractor(SwingKeypointData):
     def __init__(self, 
                  file_name,
@@ -121,22 +119,7 @@ class KpExtractor(SwingKeypointData):
         self.coco_idxs = {"L_SH":5, "R_SH":6, "L_ELBOW":7, "R_ELBOW":8, 
              "L_WRIST":9, "R_WRIST":10, "L_HIP":11, "R_HIP":12, 
              "L_KNEE":13, "R_KNEE":14, "L_ANKLE":15, "R_ANKLE":16}
-        
-        # # Dynamically create attributes using setattr
-        # for attr_name, coco_key in self.coco_idxs.items():
-        #     setattr(self, attr_name.lower(), 
-        #             self.kps[:, coco_key,
-        #             :].astype(float).copy())
-            
-    # # Handles the case-insensitive lookup
-    # def __getattr__(self, name):
-    #     """
-    #     Called when default attribute access fails. 
-    #     Try to find the lowercase version of the attribute.
-    #     """
-    #     lower_name = name.lower()
-    #     if lower_name in self.__dict__:
-    #         return self.__dict__[lower_name]
+
     def __getattr__(self, name):
         lower_name = name.lower()
         upper_name = name.upper()
@@ -150,13 +133,11 @@ class KpExtractor(SwingKeypointData):
         # Fallback for other attributes
         if lower_name in self.__dict__:
             return self.__dict__[lower_name]
-            
-        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
-
 
     def threshold_score(self, threshold_value=0.4):
         if threshold_value is None: 
-            return self.raw_kps.astype(float).copy()
+            #return self.raw_kps.astype(float).copy()
+            return interpolate_and_filter_pandas(self.raw_kps.astype(float).copy())
         # punch up score values to a threshold
         kps = self.raw_kps.astype(float).copy()
         mask = kps[:, :, 2] < threshold_value
@@ -195,6 +176,7 @@ def interpolate_and_filter_pandas(keypoints):
     return reconstructed_data
 
 
+
 class SwingExtractor(KpExtractor):
     def __init__(self, 
                  row,
@@ -211,10 +193,13 @@ class SwingExtractor(KpExtractor):
         self.row = row
         self.clip_name = self.row.clip_name
         self.processors = processors
-        self.kps = self.get_clip_kps(self.row, self.processors)
+        self.kp_extractor = self.get_clip_kps(self.row, self.processors)
+        ## Need to smooth here
         if normalizer:
-            self.kps.kps = self.normalize_kps_by_body(self.kps)
-                     
+            self.kp_extractor.kps = self.normalize_kps_by_body(self.kp_extractor)
+
+        self.set_kp_attrs()
+        self.compute_kp_derivatives()   
         self.right_arm_angle = self.get_arm_angle(right=True)
         self.left_arm_angle = self.get_arm_angle(right=False)
         self.shoulder_angle = self.get_shoulder_angle(right=True)
@@ -229,12 +214,12 @@ class SwingExtractor(KpExtractor):
                      
         self.vertical_extension = self.get_vertical_extension()
         # self.swing_radius = self.get_swing_radius()
-
-        self.compute_all_derivatives()
+        
+        self.compute_relational_derivatives()
 
         if post_processors:
             for processor in post_processors:
-                self.kps = processor(self.kps)
+                self.kp_extractor = processor(self.kp_extractor)
     
     def get_clip_kps(self, row, processors=None):
         pkl_file, clip_name = row.pkl_path, row.clip_name
@@ -245,97 +230,47 @@ class SwingExtractor(KpExtractor):
                            end_idx = end_idx
                           )
         return kpe
-        
+
+    def set_kp_attrs(self):
+        for coco_key in self.coco_idxs.keys():
+            this_attribute = getattr(self.kp_extractor, coco_key.lower())
+            setattr(self, f"{coco_key.lower()}_xy", this_attribute)
+
+
     def get_arm_angle(self, right=True):
         if right:
-            first_pt = self.kps.r_sh
-            second_pt = self.kps.r_elbow
-            third_pt = self.kps.r_wrist
+            first_pt, second_pt, third_pt = self.kp_extractor.r_sh, self.kp_extractor.r_elbow, self.kp_extractor.r_wrist
         else:
-            first_pt = self.kps.l_sh
-            second_pt = self.kps.l_elbow
-            third_pt = self.kps.l_wrist
+            first_pt, second_pt, third_pt = self.kp_extractor.l_sh, self.kp_extractor.l_elbow, self.kp_extractor.l_wrist
         angle = angle_3points_deg(first_pt, second_pt, third_pt)
         return np.abs(angle)
         
-    
     def get_shoulder_angle(self, right=True):
         if right:
-            first_pt = self.kps.r_sh
-            second_pt = self.kps.l_sh
+            first_pt, second_pt = self.kp_extractor.r_sh, self.kp_extractor.l_sh
         else:
-            first_pt = self.kps.l_sh
-            second_pt = self.kps.r_sh
+            first_pt, second_pt = self.kp_extractor.l_sh, self.kp_extractor.r_sh
         return angle_2points_deg(first_pt, second_pt)
-    
-                 
+        
     def get_hip_angle(self, right=True):
         if right:
-            first_pt = self.kps.r_hip
-            second_pt = self.kps.l_hip
+            first_pt, second_pt = self.kp_extractor.r_hip, self.kp_extractor.l_hip
         else:
-            first_pt = self.kps.l_hip
-            second_pt = self.kps.r_hip
+            first_pt, second_pt = self.kp_extractor.l_hip, self.kp_extractor.r_hip
         return angle_2points_deg(first_pt, second_pt)
-    
-                 
+              
     def get_leg_angle(self, right=True):
         if right:
-            first_pt = self.kps.r_hip
-            second_pt = self.kps.r_knee
-            third_pt = self.kps.r_ankle
+            first_pt, second_pt, third_pt = self.kp_extractor.r_hip, self.kp_extractor.r_knee, self.kp_extractor.r_ankle
         else:
-            first_pt = self.kps.l_hip
-            second_pt = self.kps.l_knee
-            third_pt = self.kps.l_ankle
+            first_pt, second_pt, third_pt = self.kp_extractor.l_hip, self.kp_extractor.l_knee, self.kp_extractor.l_ankle
         return angle_3points_deg(first_pt, second_pt, third_pt)
-    
-    
-    # def get_x_factor(self):
-    #     """
-    #     Calculates X-Factor (Shoulder Rotation - Hip Rotation).
-    #     Note: This is an estimation based on 2D projected width.
-    #     """
-    #     # 1. Get Rotation Angles (0 deg = Square to camera, 90 deg = Perpendicular)
-    #     shoulder_rot = self._calculate_rotation_from_width(self.kps.r_sh, self.kps.l_sh)
-    #     hip_rot = self._calculate_rotation_from_width(self.kps.r_hip, self.kps.l_hip)
-        
-    #     # 2. Calculate X-Factor (The difference in rotation)
-    #     # We use absolute difference because direction (backswing vs downswing) 
-    #     # is ambiguous in simple width projection without temporal tracking.
-    #     x_factor = np.abs(shoulder_rot - hip_rot)
-        
-    #     return x_factor
-    # def get_x_factor(self):
-    # # 1. Robust Max Width (Use 95th percentile to ignore outliers)
-    #     s_width = np.linalg.norm(self.kps.r_sh - self.kps.l_sh, axis=1)
-    #     h_width = np.linalg.norm(self.kps.r_hip - self.kps.l_hip, axis=1)
-        
-    #     # Smooth the widths FIRST to prevent jitter at the peaks
-    #     # Window size must be odd; adjust based on fps (e.g., 15 for 60fps)
-    #     s_width_smooth = savgol_filter(s_width, window_length=15, polyorder=2)
-    #     h_width_smooth = savgol_filter(h_width, window_length=15, polyorder=2)
 
-    #     # Calculate robust max (baseline)
-    #     s_max = np.percentile(s_width_smooth, 98) 
-    #     h_max = np.percentile(h_width_smooth, 98)
 
-    #     # 2. Calculate Rotation (Face-On Logic: arccos)
-    #     # Ratio = 1.0 at Address (0 deg), Ratio < 1.0 when turned
-    #     s_ratio = np.clip(s_width_smooth / s_max, -1.0, 1.0)
-    #     h_ratio = np.clip(h_width_smooth / h_max, -1.0, 1.0)
-
-    #     s_rot = np.degrees(np.arccos(s_ratio))
-    #     h_rot = np.degrees(np.arccos(h_ratio))
-
-    #     # 3. Calculate X-Factor
-    #     x_factor = np.abs(s_rot - h_rot)
-        
-    #     return x_factor
     def get_x_factor(self):
         # 1. Calculate Widths
-        s_width_smooth = np.linalg.norm(self.kps.r_sh - self.kps.l_sh, axis=1)
-        h_width_smooth = np.linalg.norm(self.kps.r_hip - self.kps.l_hip, axis=1)
+        s_width_smooth = np.linalg.norm(self.kp_extractor.r_sh - self.kp_extractor.l_sh, axis=1)
+        h_width_smooth = np.linalg.norm(self.kp_extractor.r_hip - self.kp_extractor.l_hip, axis=1)
 
         # 2. Define Max Width (Baseline for 90-degree turn)
         # CRITICAL: "Max" in DTL is the Top of Swing (widest visual point).
@@ -364,8 +299,6 @@ class SwingExtractor(KpExtractor):
         return x_factor
 
 
-
-
     def get_x_torque(self):
         """
         Calculates 'X-Factor Stretch' (The rate of change of X-Factor).
@@ -378,7 +311,7 @@ class SwingExtractor(KpExtractor):
         return np.gradient(self.x_factor)
 
     def _calculate_rotation_from_width(self, kp_right, kp_left):
-      # Calculate Euclidean distance
+        # Calculate Euclidean distance
         widths = np.linalg.norm(kp_right - kp_left, axis=1)
         max_width = np.max(widths)
         
@@ -395,21 +328,21 @@ class SwingExtractor(KpExtractor):
         return rotation_angles
 
     def get_side_bend(self, right=True):
-        first_pt, second_pt = (self.kps.r_sh, self.kps.r_hip) if right else (self.kps.l_sh, self.kps.l_hip)
+        first_pt, second_pt = (self.kp_extractor.r_sh, self.kp_extractor.r_hip) if right else (self.kp_extractor.l_sh, self.kp_extractor.l_hip)
         diff = first_pt - second_pt
         return np.linalg.norm(diff, axis=1)
 
     def get_vertical_extension(self):
-        l_thigh = np.linalg.norm(self.kps.l_hip[0] - self.kps.l_knee[0])
-        l_shin = np.linalg.norm(self.kps.l_knee[0] - self.kps.l_ankle[0])
+        l_thigh = np.linalg.norm(self.kp_extractor.l_hip[0] - self.kp_extractor.l_knee[0])
+        l_shin = np.linalg.norm(self.kp_extractor.l_knee[0] - self.kp_extractor.l_ankle[0])
         l_leg_len = l_thigh + l_shin
-        r_thigh = np.linalg.norm(self.kps.r_hip[0] - self.kps.r_knee[0])
-        r_shin = np.linalg.norm(self.kps.r_knee[0] - self.kps.r_ankle[0])
+        r_thigh = np.linalg.norm(self.kp_extractor.r_hip[0] - self.kp_extractor.r_knee[0])
+        r_shin = np.linalg.norm(self.kp_extractor.r_knee[0] - self.kp_extractor.r_ankle[0])
         r_leg_len = r_thigh + r_shin
         reference_length = (l_leg_len + r_leg_len) / 2
         
-        l_hip, r_hip = self.kps.l_hip[:, 1], self.kps.r_hip[:, 1]
-        l_ankle, r_ankle = self.kps.l_ankle[:, 1], self.kps.r_ankle[:, 1]
+        l_hip, r_hip = self.kp_extractor.l_hip[:, 1], self.kp_extractor.r_hip[:, 1]
+        l_ankle, r_ankle = self.kp_extractor.l_ankle[:, 1], self.kp_extractor.r_ankle[:, 1]
     
         mid_hip_y = (l_hip + r_hip) / 2
         mid_ankle_y = (l_ankle + r_ankle) / 2
@@ -425,7 +358,6 @@ class SwingExtractor(KpExtractor):
         """
         Calculates robust normalization factor (scale) AND centers the subject.
         """
-        # Extract coordinates (Frames, 2)
         l_hip, r_hip = kps.l_hip[:, :2], kps.r_hip[:, :2]
         l_knee, r_knee = kps.l_knee[:, :2], kps.r_knee[:, :2]
         l_ankle, r_ankle = kps.l_ankle[:, :2], kps.r_ankle[:, :2]
@@ -472,134 +404,65 @@ class SwingExtractor(KpExtractor):
         normalized_kps[:, :, :2] = kps_centered[:, :, :2] / global_scale
 
         return normalized_kps
+
     
-    # def normalize_kps_by_body(self,
-    #                           kps, 
-    #                           method='torso_height',
-    #                          ):
-    #     """
-    #     Calculates a robust normalization factor (scale) for a single video.
-    #     method: 'leg_segment_sum' or 'torso_height'
-            
-    #     Returns:
-    #         scale_factor: Float representing the pixel length of the body part.
-    #     """
-    #     # Extract coordinates (Frames, 2)
-    #     l_hip, r_hip = kps.l_hip[:, :2], kps.r_hip[:, :2]
-    #     l_knee, r_knee = kps.l_knee[:, :2], kps.r_knee[:, :2]
-    #     l_ankle, r_ankle = kps.l_ankle[:, :2], kps.r_ankle[:, :2]
-        
-    #     # Helper: Euclidean distance between two point arrays
-    #     def dist(p1, p2):
-    #         return np.linalg.norm(p1 - p2, axis=1)
-    
-    #     if method == 'leg_segment_sum':
-    #         # Calculate lengths for BOTH legs to be safe (average them)q
-    #         # Segment lengths: Hip->Knee + Knee->Ankle
-    #         len_left = dist(l_hip, l_knee) + dist(l_knee, l_ankle)
-    #         len_right = dist(r_hip, r_knee) + dist(r_knee, r_ankle)
-            
-    #         # Combine: You can take the max (usually the leg facing camera) 
-    #         # or average (if facing front). For golf (side view), max is safer 
-    #         # as the back leg might be occluded/foreshorterned.
-    #         frame_scales = np.maximum(len_left, len_right)
-            
-    #     elif method == 'torso_height':
-    #         # Mid-Hip to Mid-Shoulder
-    #         l_shldr, r_shldr = kps.l_sh[:, :2], kps.r_sh[:, :2]
-    #         mid_hip = (l_hip + r_hip) / 2
-    #         mid_shldr = (l_shldr + r_shldr) / 2
-    #         frame_scales = dist(mid_shldr, mid_hip)
-    
-    #     # ROBUST STATISTIC: Use Median or Trimmed Mean across frames
-    #     # This ignores frames where detection failed (length ~ 0 or huge)
-    #     # Filter out zeros first
-    #     valid_scales = frame_scales[frame_scales > 10] # Threshold for noise
-        
-    #     if len(valid_scales) == 0:
-    #         return 1.0 # Fallback
-    
-    #     global_scale = np.median(valid_scales)
-    #     normalized_kps = kps.kps/global_scale
-    #     return normalized_kps
-    
-    def add_derivatives(self, metric_name, window=7, poly=3):
+    def add_derivatives(self, metric_name, 
+                        window=7, poly=3,
+                        fps=60, axis=0):
         """
         Calculates velocity (d1) and acceleration (d2) for a given metric
         and attaches them to the instance as new attributes.
         Example: 'x_factor' -> 'x_factor_vel' and 'x_factor_acc'
         """
         if not hasattr(self, metric_name):
+            print('cant_find')
+            print(metric_name)
             return
 
         data = getattr(self, metric_name)
-        
+        if data.ndim > 1:
+            data = data[:, :2]
         # Calculate Velocity (1st Derivative)
         # delta=1 assumes frame-by-frame. If you have time, use delta=dt
-        vel = savgol_filter(data, window_length=window, polyorder=poly, deriv=1, delta=1)
+        vel = savgol_filter(data, 
+                            window_length=window, 
+                            polyorder=poly, 
+                            deriv=1,
+                            delta=1/fps,
+                            axis=axis)
         
         # Calculate Acceleration (2nd Derivative)
-        acc = savgol_filter(data, window_length=window, polyorder=poly, deriv=2, delta=1)
+        acc = savgol_filter(data, 
+                            window_length=window, 
+                            polyorder=poly, 
+                            deriv=2, 
+                            delta=1/fps,
+                            axis=axis)
 
         # Set new attributes dynamically
         setattr(self, f"{metric_name}_vel", vel)
         setattr(self, f"{metric_name}_acc", acc)
-
-    def compute_all_derivatives(self):
+            
+    def compute_relational_derivatives(self):
         # Define which metrics need derivatives
         target_metrics = [
             "x_factor", 
             "right_arm_angle", 
+            "left_arm_angle",
+            "right_leg_angle",
+            "left_leg_angle",
             "vertical_extension",
             "shoulder_angle", # Rate of tilt
-            "hip_angle" 
+            "hip_angle",
         ]
         
         for metric in target_metrics:
             self.add_derivatives(metric)
     
-
-
-def get_interpolator(window_length=7):
-    return partial(interpolate_and_filter_pandas, window_length=window_length)    
-
-
-def interpolate_and_filter_pandas(keypoints, 
-                                  window_length=7,
-                                  polyorder=3,
-                                 ):
-    """
-    keypoints: shape (N, 2) or (N, C) numpy array with NaNs
-    """
-    # 1. Capture original shape
-    n_frames, n_keypoints, n_coords = keypoints.shape
-    just_kps = keypoints[:, :, :2]  # Ignore confidence scores for interpolation/filtering
-    
-    # 2. Reshape to 2D: (Frames, Keypoints * XY)
-    # This flattens (17, 2) into 34 columns. Each column is a specific coordinate trajectory.
-    # shape becomes (180, 34)
-    flattened_data = just_kps.reshape(n_frames, -1)
-    
-    # 3. Interpolate with Pandas
-    df = pd.DataFrame(flattened_data)
-    # 'linear' connects points with a straight line
-    # 'limit_direction="both"' handles missing frames at the start/end of clip
-    df_interp = df.interpolate(method='spline', order=2, limit_direction='both')
-    df_interp = df.interpolate(method='linear', limit_direction='both')
-
-    # 3. Convert back to numpy
-    clean_data = df_interp.to_numpy()
-    
-    # 4. Apply Savitzky-Golay filter
-    # window_length must be odd; polyorder is typically 2 or 3
-    smoothed_data = savgol_filter(clean_data, 
-                                  window_length=window_length, 
-                                  polyorder=polyorder, 
-                                  axis=0)
-    reshaped_data = smoothed_data.reshape(n_frames, n_keypoints, 2)
-    confidence_scores = keypoints[:, :, 2:]
-    reconstructed_data = np.concatenate([reshaped_data, confidence_scores], axis=2)
-    return reconstructed_data
+    def compute_kp_derivatives(self):
+        # Define which metrics need derivatives
+        for metric in self.coco_idxs.keys():
+            self.add_derivatives(metric.lower())    
 
 
 def angle_2points_deg(p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
@@ -611,31 +474,6 @@ def angle_2points_deg(p1: np.ndarray, p2: np.ndarray) -> np.ndarray:
     np.degrees(angles, out=angles)
     return angles
 
-
-
-# def angle_3points_deg(a: np.ndarray, b: np.ndarray, c: np.ndarray) -> np.ndarray:
-#     """
-#     Returns signed angle (degrees) at vertex b, from vector ba -> bc.
-#     Range: [-180, 180]
-#     Positive = Clockwise (if y-axis is down/image coords)
-#     """
-#     # Create vectors relative to B
-#     ba = a - b
-#     bc = c - b
-    
-#     # Calculate determinant (2D cross product) and dot product
-#     # det = x1*y2 - y1*x2
-#     det = ba[:, 0] * bc[:, 1] - ba[:, 1] * bc[:, 0]
-    
-#     # dot = x1*x2 + y1*y2
-#     dot = ba[:, 0] * bc[:, 0] + ba[:, 1] * bc[:, 1]
-    
-#     # arctan2(y, x) -> arctan2(det, dot)
-#     angles = np.arctan2(det, dot)
-    
-#     # In-place conversion to degrees
-#     np.degrees(angles, out=angles)
-#     return angles
 
 def angle_3points_deg(a, b, c):
     ba = a - b
