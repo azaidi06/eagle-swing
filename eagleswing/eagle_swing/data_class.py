@@ -183,6 +183,9 @@ class SwingExtractor(KpExtractor):
                  normalizer=True,
                  processors: List[Callable] = None,
                  post_processors: List[Callable] = None,
+                 by_body=False,
+                 by_ref=False,
+                 robust=False,
                  **kwargs):
         super().__init__(file_name=row.pkl_path, 
                          start_idx=row.start_idx,
@@ -196,7 +199,12 @@ class SwingExtractor(KpExtractor):
         self.kp_extractor = self.get_clip_kps(self.row, self.processors)
         ## Need to smooth here
         if normalizer:
-            self.kp_extractor.kps = self.normalize_kps_by_body(self.kp_extractor)
+            if by_body:
+                self.kp_extractor.kps = self.normalize_kps_by_body(self.kp_extractor)
+            if by_ref:
+                self.kp_extractor.kps = self.normalize_kps_by_ref(self.kp_extractor)
+            if robust:
+                self.kp_extractor.kps = self.normalize_golf_swing_robust(self.kp_extractor)
 
         self.set_kp_attrs()
         self.compute_kp_derivatives()   
@@ -349,6 +357,111 @@ class SwingExtractor(KpExtractor):
         vertical_extension = mid_ankle_y - mid_hip_y
         normalized_extension = vertical_extension / reference_length
         return normalized_extension
+
+
+
+    def normalize_golf_swing_robust(self, kps, ref_frame_idx=0):
+        """
+        Hybrid Approach: 
+        1. SCALING: Uses median torso height from ALL frames (Robust to noise).
+        2. CENTERING: Uses Frame 0 hip position (Preserves Sway/Slide).
+        """
+        # --- 1. Robust Scaling (From Method 2) ---
+        # Calculate torso length for EVERY frame first
+        l_shldr, r_shldr = kps.l_sh[:, :2], kps.r_sh[:, :2]
+        l_hip, r_hip     = kps.l_hip[:, :2], kps.r_hip[:, :2]
+        
+        mid_shldr = (l_shldr + r_shldr) / 2
+        mid_hip   = (l_hip + r_hip) / 2
+        
+        # Vectorized distance calculation
+        frame_torso_lens = np.linalg.norm(mid_shldr - mid_hip, axis=1)
+        
+        # Use median to ignore outliers/glitches
+        # This ensures Day 1 and Day 2 are scaled to the same 'biological' height
+        global_scale = np.median(frame_torso_lens[frame_torso_lens > 0])
+        
+        if global_scale < 1e-5:
+            print("Warning: Scale too small.")
+            return kps.kps
+
+        # --- 2. Anchor Centering (From Method 1) ---
+        # We want to subtract the Address Position (Frame 0) from all frames
+        # to preserve movement relative to the start.
+        ref_origin = mid_hip[ref_frame_idx].reshape(1, 1, 2)
+        
+        # --- 3. Apply ---
+        normalized_kps = kps.kps.copy()
+        
+        # Center: Shift so Frame 0 hips are at (0,0)
+        normalized_kps[:, :, :2] = kps.kps[:, :, :2] - ref_origin
+        
+        # Scale: Normalize by the global median torso height
+        normalized_kps[:, :, :2] = normalized_kps[:, :, :2] / global_scale
+        
+        return normalized_kps
+
+
+    def normalize_kps_by_ref(self,
+                             kps, 
+                             method='torso_height',
+                             ref_frame_idx=0
+                            ):
+        """
+        Normalizes entire video based on the geometry of a SINGLE reference frame.
+        This preserves relative motion (sway/lift) while aligning subjects 
+        from different days/distances.
+        """
+        # Access keypoint columns: Shape (Frames, 2)
+        l_hip, r_hip = kps.l_hip[:, :2], kps.r_hip[:, :2]
+        l_shldr, r_shldr = kps.l_sh[:, :2], kps.r_sh[:, :2]
+        
+        # --- 1. Calculate Reference Geometry (Scalar/Vector from ONE frame) ---
+        
+        # Origin: Mid-Hip of the reference frame
+        # Shape: (2,) -> e.g., [x_ref, y_ref]
+        ref_mid_hip = (l_hip[ref_frame_idx] + r_hip[ref_frame_idx]) / 2
+
+        # Scale: Torso Height of the reference frame
+        # Euclidean distance helper
+        def get_dist(p1, p2):
+            return np.linalg.norm(p1 - p2)
+
+        if method == 'torso_height':
+            ref_mid_shldr = (l_shldr[ref_frame_idx] + r_shldr[ref_frame_idx]) / 2
+            ref_scale = get_dist(ref_mid_shldr, ref_mid_hip)
+            
+        elif method == 'leg_segment_sum':
+            # Example using just left leg for reference, or max of both
+            l_knee = kps.l_knee[ref_frame_idx, :2]
+            l_ankle = kps.l_ankle[ref_frame_idx, :2]
+            # ... additional logic for leg method if needed
+            # For simplicity using torso as requested:
+            ref_scale = get_dist(l_shldr[ref_frame_idx], l_hip[ref_frame_idx]) * 2 # Fallback
+            
+        # Safety check for bad reference frame
+        if ref_scale < 1e-5:
+            print("Warning: Reference scale too small, returning original.")
+            return kps.kps
+
+        # --- 2. Apply Transformation to ALL frames ---
+        
+        # Create output copy
+        normalized_kps = kps.kps.copy()
+
+        # Reshape ref values for broadcasting:
+        # Target Shape: (Frames, Num_Keypoints, XY) -> (N, 17, 2)
+        # Ref Shape:    (1, 1, 2)
+        ref_origin_reshaped = ref_mid_hip.reshape(1, 1, 2)
+        
+        # A. Center everyone so Reference Frame Mid-Hip is at (0,0)
+        # This preserves sway: if Frame 10 hips move right, they will be > 0
+        normalized_kps[:, :, :2] = kps.kps[:, :, :2] - ref_origin_reshaped
+
+        # B. Scale everything so Reference Frame Torso Length = 1.0
+        normalized_kps[:, :, :2] = normalized_kps[:, :, :2] / ref_scale
+
+        return normalized_kps
 
 
     def normalize_kps_by_body(self,
